@@ -175,7 +175,7 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<IdentityUser1>)_userStore;
+            return (IUserEmailStore<IdentityUser>)_userStore;
         }
     }
 }

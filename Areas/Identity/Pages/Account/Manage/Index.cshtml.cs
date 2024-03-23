@@ -15,12 +15,13 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<Sellasist_OptimaUser> _userManager;
-        private readonly SignInManager<Sellasist_OptimaUser> _signInManager;
-
+        //private readonly UserManager<Sellasist_OptimaUser> _userManager;
+        //private readonly SignInManager<Sellasist_OptimaUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         public IndexModel(
-            UserManager<Sellasist_OptimaUser> userManager,
-            SignInManager<Sellasist_OptimaUser> signInManager)
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -61,7 +62,7 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
         }
 
-        private async Task LoadAsync(Sellasist_OptimaUser user)
+        private async Task LoadAsync(IdentityUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -82,7 +83,7 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            await LoadAsync(user);
+            await LoadAsync((IdentityUser)user);
             return Page();
         }
 
@@ -96,7 +97,7 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                await LoadAsync(user);
+                await LoadAsync((IdentityUser)user);
                 return Page();
             }
 

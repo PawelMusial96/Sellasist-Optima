@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Sellasist_Optima.Areas.Identity.Data;
+using Sellasist_Optima.Api;
 
 namespace Sellasist_Optima.Areas.Identity.Data;
 
-public class Sellasist_OptimaContext : IdentityDbContext<Sellasist_OptimaUser>
+public class Sellasist_OptimaContext : IdentityDbContext<IdentityUser>
 {
     public Sellasist_OptimaContext(DbContextOptions<Sellasist_OptimaContext> options)
         : base(options)
@@ -19,4 +20,6 @@ public class Sellasist_OptimaContext : IdentityDbContext<Sellasist_OptimaUser>
         // For example, you can rename the ASP.NET Identity table names and more.
         // Add your customizations after calling base.OnModelCreating(builder);
     }
+
+    public DbSet<Sellasist_Optima.Api.Api> Api { get; set; } = default!;
 }

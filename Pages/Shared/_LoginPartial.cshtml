@@ -1,8 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Sellasist_Optima.Areas.Identity.Data
 
-@inject SignInManager<Sellasist_OptimaUser> SignInManager
-@inject UserManager<Sellasist_OptimaUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))

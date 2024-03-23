@@ -15,10 +15,10 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account
 {
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<Sellasist_OptimaUser> _signInManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
-
-        public LogoutModel(SignInManager<Sellasist_OptimaUser> signInManager, ILogger<LogoutModel> logger)
+        //Sellasist_OptimaUser
+        public LogoutModel(SignInManager<IdentityUser> signInManager, ILogger<LogoutModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;

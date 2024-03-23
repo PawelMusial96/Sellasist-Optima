@@ -24,17 +24,17 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<Sellasist_OptimaUser> _signInManager;
-        private readonly UserManager<Sellasist_OptimaUser> _userManager;
-        private readonly IUserStore<Sellasist_OptimaUser> _userStore;
-        private readonly IUserEmailStore<Sellasist_OptimaUser> _emailStore;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserStore<IdentityUser> _userStore;
+        private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<Sellasist_OptimaUser> userManager,
-            IUserStore<Sellasist_OptimaUser> userStore,
-            SignInManager<Sellasist_OptimaUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            IUserStore<IdentityUser> userStore,
+            SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -169,13 +169,13 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account
             }
         }
 
-        private IUserEmailStore<Sellasist_OptimaUser> GetEmailStore()
+        private IUserEmailStore<IdentityUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<Sellasist_OptimaUser>)_userStore;
+            return (IUserEmailStore<IdentityUser1>)_userStore;
         }
     }
 }

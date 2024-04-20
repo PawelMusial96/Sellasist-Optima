@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Sellasist_Optima.Areas.Identity.Data;
-using Sellasist_Optima.Api;
+using Sellasist_Optima.Models;
 
 namespace Sellasist_Optima.Areas.Identity.Data;
 
@@ -16,10 +16,26 @@ public class Sellasist_OptimaContext : IdentityDbContext<IdentityUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        // Customize the ASP.NET Identity model and override the defaults if needed.
-        // For example, you can rename the ASP.NET Identity table names and more.
-        // Add your customizations after calling base.OnModelCreating(builder);
+
+        // Dodaj konfigurację dla klasy Api
+        builder.Entity<SellAsistAPI>()
+            .HasKey(a => a.Id);
+
+        builder.Entity<SellAsistAPI>()
+            .Property(a => a.TokenAPI)
+            .IsRequired()
+            .HasMaxLength(255); // Maksymalna długość nazwy (255 znaków)
+
+        // Configure UserId to be linked to IdentityUser.Id
+        builder.Entity<SellAsistAPI>()
+            .HasOne<IdentityUser>()
+            .WithMany()
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        base.OnModelCreating(builder);
+
     }
 
-    public DbSet<Sellasist_Optima.Api.Api> Api { get; set; } = default!;
+    public DbSet<SellAsistAPI> SellAsistAPI { get; set; }
 }

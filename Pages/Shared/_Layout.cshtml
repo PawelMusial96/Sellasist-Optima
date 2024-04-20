@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Sellasist_Optima.Models
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,14 +31,22 @@
                         <li class="nav-item" >
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
-                        @if (User.IsInRole("Admin"))
+                        @if (User.IsInRole("Customer"))
+                         {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/APISellAsist/APISellAsistCreate">SellAsist API</a>
+                        </li>   
+                         }
+
+                        @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="Api/Create">Create</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/APISellAsist/APISellAsistList">SellAsist List</a>
                             </li>
                         }
                     </ul>
                 </div>
+    
                 <partial name="_LoginPartial"/>
             </div>
         </nav>

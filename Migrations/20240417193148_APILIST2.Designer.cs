@@ -11,7 +11,7 @@ using Sellasist_Optima.Areas.Identity.Data;
 
 namespace Sellasist_Optima.Migrations
 {
-    [DbContext(typeof(Sellasist_OptimaContext))]
+    [DbContext(typeof(UserContext))]
     [Migration("20240417193148_APILIST2")]
     partial class APILIST2
     {

@@ -15,13 +15,13 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account.Manage
 {
     public class DeletePersonalDataModel : PageModel
     {
-        private readonly UserManager<Sellasist_OptimaUser> _userManager;
-        private readonly SignInManager<Sellasist_OptimaUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
 
         public DeletePersonalDataModel(
-            UserManager<Sellasist_OptimaUser> userManager,
-            SignInManager<Sellasist_OptimaUser> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             ILogger<DeletePersonalDataModel> logger)
         {
             _userManager = userManager;

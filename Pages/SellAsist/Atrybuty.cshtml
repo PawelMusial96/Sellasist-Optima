@@ -1,0 +1,13 @@
+﻿@page
+@model Sellasist_Optima.Pages.SellAsist.AtrybutyModel
+@{
+}
+
+<h2>Atrybuty</h2>
+
+<ul>
+    @foreach (var status in Model.Atrybuty)
+    {
+        <li>@status.Name</li>
+    }
+</ul>

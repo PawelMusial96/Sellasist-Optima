@@ -1,27 +1,31 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sellasist_Optima.Areas.Identity.Data;
+using Sellasist_Optima.BazyDanych;
+using System;
+using System.Configuration;
+using System.Threading.Tasks;
+
 var builder = WebApplication.CreateBuilder(args);
+
 var connectionString = builder.Configuration.GetConnectionString("Sellasist_OptimaContextConnection") ?? throw new InvalidOperationException("Connection string 'Sellasist_OptimaContextConnection' not found.");
 
-builder.Services.AddDbContext<Sellasist_OptimaContext>(options => options.UseSqlServer(connectionString));
-
+builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-   .AddRoles<IdentityRole>()
-   .AddEntityFrameworkStores<Sellasist_OptimaContext>();
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<UserContext>();
 
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<Sellasist_OptimaContext>();
-
-// Add services to the container.
+builder.Services.AddDbContext<SellAsistContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
+builder.Services.AddHttpClient("SellAsistApiClient");
+
+builder.Services.AddScoped<SellAsistContext>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -29,17 +33,20 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapRazorPages();
 
-using (var scope = app.Services.CreateScope())
+await InitializeRoles(app.Services);
+await InitializeAdminUser(app.Services);
+
+app.Run();
+
+async Task InitializeRoles(IServiceProvider services)
 {
+    using var scope = services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
     var roles = new[] { "Admin", "Customer" };
-
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
@@ -47,23 +54,20 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
-using (var scope = app.Services.CreateScope())
+async Task InitializeAdminUser(IServiceProvider services)
 {
-    var userManager=
-        scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-    string emial = "admin@admin.com";
+    using var scope = services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    string email = "admin@admin.com";
     string password = "Test1234!";
 
-    if (await userManager.FindByEmailAsync(emial) == null)
+    if (await userManager.FindByEmailAsync(email) == null)
     {
-        var user = new IdentityUser();
-        user.UserName = emial;
-        user.Email = emial;
-
-        await userManager.CreateAsync(user, password);
-
-        await userManager.AddToRoleAsync(user, "Admin");
+        var user = new IdentityUser { UserName = email, Email = email };
+        var result = await userManager.CreateAsync(user, password);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
     }
 }
-app.Run();

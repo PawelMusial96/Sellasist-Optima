@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Sellasist_Optima.Areas.Identity.Data;
 
 // Add profile data for application users by adding properties to the Sellasist_OptimaUser class
-public class Sellasist_OptimaUser : IdentityUser
+public class User : IdentityUser
 {
 }
 

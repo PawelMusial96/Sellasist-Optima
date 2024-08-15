@@ -11,7 +11,7 @@ using Sellasist_Optima.Areas.Identity.Data;
 
 namespace Sellasist_Optima.Migrations
 {
-    [DbContext(typeof(Sellasist_OptimaContext))]
+    [DbContext(typeof(UserContext))]
     [Migration("20240323210940_userrole")]
     partial class userrole
     {

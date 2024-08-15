@@ -24,17 +24,17 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
-        private readonly SignInManager<Sellasist_OptimaUser> _signInManager;
-        private readonly UserManager<Sellasist_OptimaUser> _userManager;
-        private readonly IUserStore<Sellasist_OptimaUser> _userStore;
-        private readonly IUserEmailStore<Sellasist_OptimaUser> _emailStore;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly IUserStore<User> _userStore;
+        private readonly IUserEmailStore<User> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
-            SignInManager<Sellasist_OptimaUser> signInManager,
-            UserManager<Sellasist_OptimaUser> userManager,
-            IUserStore<Sellasist_OptimaUser> userStore,
+            SignInManager<User> signInManager,
+            UserManager<User> userManager,
+            IUserStore<User> userStore,
             ILogger<ExternalLoginModel> logger,
             IEmailSender emailSender)
         {
@@ -198,27 +198,27 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private Sellasist_OptimaUser CreateUser()
+        private User CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<Sellasist_OptimaUser>();
+                return Activator.CreateInstance<User>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(Sellasist_OptimaUser)}'. " +
-                    $"Ensure that '{nameof(Sellasist_OptimaUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(Data.User)}'. " +
+                    $"Ensure that '{nameof(Data.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the external login page in /Areas/Identity/Pages/Account/ExternalLogin.cshtml");
             }
         }
 
-        private IUserEmailStore<Sellasist_OptimaUser> GetEmailStore()
+        private IUserEmailStore<User> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<Sellasist_OptimaUser>)_userStore;
+            return (IUserEmailStore<User>)_userStore;
         }
     }
 }

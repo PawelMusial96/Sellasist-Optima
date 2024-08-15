@@ -18,13 +18,13 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account.Manage
 {
     public class EmailModel : PageModel
     {
-        private readonly UserManager<Sellasist_OptimaUser> _userManager;
-        private readonly SignInManager<Sellasist_OptimaUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
 
         public EmailModel(
-            UserManager<Sellasist_OptimaUser> userManager,
-            SignInManager<Sellasist_OptimaUser> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -74,7 +74,7 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account.Manage
             public string NewEmail { get; set; }
         }
 
-        private async Task LoadAsync(Sellasist_OptimaUser user)
+        private async Task LoadAsync(User user)
         {
             var email = await _userManager.GetEmailAsync(user);
             Email = email;

@@ -12,8 +12,8 @@
     <title>@ViewData["Title"] - Sellasist_Optima</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Sellasist_Optima.styles.css" asp-append-version="true" />
-</head>
+@*     <link rel="stylesheet" href="~/Sellasist_Optima.styles.css" asp-append-version="true" />
+ *@</head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -31,17 +31,29 @@
                         <li class="nav-item" >
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
-                        @if (User.IsInRole("Customer"))
+@*                         @if (User.IsInRole("Customer"))
                          {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/APISellAsist/APISellAsistCreate">SellAsist API</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/Create">SellAsist API</a>
                         </li>   
-                         }
+                         } *@
 
                         @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/APISellAsist/APISellAsistList">SellAsist List</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/SellAsistAPI">API</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/Status">Statusy</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/Atrybuty">Atrybuty</a>
                             </li>
                         }
                     </ul>

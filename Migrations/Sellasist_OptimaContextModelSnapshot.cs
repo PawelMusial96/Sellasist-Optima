@@ -10,7 +10,7 @@ using Sellasist_Optima.Areas.Identity.Data;
 
 namespace Sellasist_Optima.Migrations
 {
-    [DbContext(typeof(Sellasist_OptimaContext))]
+    [DbContext(typeof(UserContext))]
     partial class Sellasist_OptimaContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

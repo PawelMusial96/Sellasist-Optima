@@ -164,16 +164,16 @@ namespace Sellasist_Optima.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private Sellasist_OptimaUser CreateUser()
+        private User CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<Sellasist_OptimaUser>();
+                return Activator.CreateInstance<User>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(Sellasist_OptimaUser)}'. " +
-                    $"Ensure that '{nameof(Sellasist_OptimaUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(Data.User)}'. " +
+                    $"Ensure that '{nameof(Data.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }

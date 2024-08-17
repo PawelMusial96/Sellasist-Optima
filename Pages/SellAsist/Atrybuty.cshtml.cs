@@ -11,7 +11,10 @@ namespace Sellasist_Optima.Pages.SellAsist
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly SellAsistContext _context;
+
+        public List<AtrybutyGrupa> AtrybutyGrupa { get; set; }
         public List<Atrybuty> Atrybuty { get; set; }
+        
 
         public AtrybutyModel(IHttpClientFactory httpClientFactory, SellAsistContext context)
         {
@@ -28,10 +31,17 @@ namespace Sellasist_Optima.Pages.SellAsist
                 client.BaseAddress = new Uri(apiInfo.API);
                 client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
 
-                HttpResponseMessage response = await client.GetAsync("/api/v1/attributes_groups");
-                if (response.IsSuccessStatusCode)
+                HttpResponseMessage responseatrybutygrupa = await client.GetAsync("/api/v1/attributes_groups");
+                if (responseatrybutygrupa.IsSuccessStatusCode)
                 {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var jsonResponse = await responseatrybutygrupa.Content.ReadAsStringAsync();
+                    AtrybutyGrupa = JsonConvert.DeserializeObject<List<AtrybutyGrupa>>(jsonResponse);
+                }
+
+                HttpResponseMessage responseatrybuty = await client.GetAsync("/api/v1/attributes");
+                if (responseatrybuty.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await responseatrybuty.Content.ReadAsStringAsync();
                     Atrybuty = JsonConvert.DeserializeObject<List<Atrybuty>>(jsonResponse);
                 }
             }

@@ -5,6 +5,19 @@
 
 <h2>Atrybuty</h2>
 
+<form method="post">
+    <div class="form-group">
+        <label for="AttributeGroupName">Attribute Group Name:</label>
+        <input type="text" id="AttributeGroupName" name="AttributeGroupName" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Attribute Group</button>
+</form>
+
+@* @if (Model.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+} *@
+
 <ul>
     @foreach (var status in Model.AtrybutyGrupa)
     {

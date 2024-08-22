@@ -17,7 +17,7 @@ namespace Sellasist_Optima.BazyDanych
         {
             base.OnModelCreating(builder);
 
-            // Dodaj konfigurację dla klasy Api
+            // Dodaje konfigurację dla klasy Api
             builder.Entity<SellAsistAPI>()
                 .HasKey(a => a.Id);
 

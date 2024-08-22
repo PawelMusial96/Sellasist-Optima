@@ -13,21 +13,32 @@
     <button type="submit" class="btn btn-primary">Add Attribute Group</button>
 </form>
 
-@* @if (Model.ErrorMessage != null)
+@if (Model.AtrybutyGrupa != null && Model.AtrybutyGrupa.Count > 0)
+{
+    <ul>
+        @foreach (var group in Model.AtrybutyGrupa)
+        {
+            <li>
+                <strong>@group.Name @* (@group.Id) *@</strong>
+                <ul>
+                    @if (Model.AtrybutyByGroup.ContainsKey(@group.Id) && Model.AtrybutyByGroup[@group.Id] != null && Model.AtrybutyByGroup[@group.Id].Any())
+                    {
+                        @foreach (var attr in Model.AtrybutyByGroup[@group.Id])
+                        {
+                            <li>@attr.Name @* (@attr.Id) *@</li>
+                        }
+                    }
+                    else
+                    {
+                        <li>No attributes found for this group.</li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+}
+
+@if (Model.ErrorMessage != null)
 {
     <div class="alert alert-danger">@Model.ErrorMessage</div>
-} *@
-
-<ul>
-    @foreach (var status in Model.AtrybutyGrupa)
-    {
-        <li>@status.Name</li>
-    }
-</ul>
-
-<ul>
-    @foreach (var status in Model.Atrybuty)
-    {
-        <li>@status.Name</li>
-    }
-</ul>
+}

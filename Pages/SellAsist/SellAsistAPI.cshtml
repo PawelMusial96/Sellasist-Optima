@@ -1,21 +1,25 @@
-﻿@page
-@model Sellasist_Optima.Pages.SellAsistAPIModel
+﻿@model Sellasist_Optima.Pages.SellAsistAPIModel
 
 <h2>Connect to Sellasist API</h2>
 
-<form method="post">
-    <div>
-        <label>Name Shop:</label>
-        <input type="text" asp-for="SellAsistAPI.API" required />
-    </div>
-    <div>
-        <label>API Key:</label>
-        <input type="text" asp-for="SellAsistAPI.KeyAPI" required />
-    </div>
-    <input type="submit" value="Connect" asp-page-handler="Connect" />
-    <p>@ViewData["Result"]</p>
-</form>
-<h3>Stored API Connections:</h3>
+@if (!Model.IsConnected)
+{
+    <form method="post" id="connectForm">
+        <div>
+            <label>Name Shop:</label>
+            <input type="text" id="nameShop" asp-for="SellAsistAPI.API" required />
+            <span asp-validation-for="SellAsistAPI.API" class="text-danger"></span>
+        </div>
+        <div>
+            <label>API Key:</label>
+            <input type="text" id="apiKey" asp-for="SellAsistAPI.KeyAPI" required />
+            <span asp-validation-for="SellAsistAPI.KeyAPI" class="text-danger"></span>
+        </div>
+        <input type="submit" value="Connect" asp-page-handler="Connect" />
+        <p>@ViewData["Result"]</p>
+    </form>
+}
+
 <table>
     <tr>
         <th>Name Shop</th>

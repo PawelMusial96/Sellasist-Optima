@@ -31,19 +31,7 @@
                         @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/SellAsistAPI">API</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("Customer"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="ConnectToSQL">SQL</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("Customer"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="ConnectToWebAPI">SQL</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Konfiguracja/Configuration">Konfiguracja</a>
                             </li>
                         }
                         @if (User.IsInRole("Customer"))

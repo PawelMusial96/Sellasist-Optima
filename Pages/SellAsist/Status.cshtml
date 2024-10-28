@@ -6,29 +6,25 @@
 
 <h2>Statusy</h2>
 
-<ul>
+
+@* <ul>
     @foreach (var status in Model.Status)
-    {
-        <li>@status.Name</li>
-    }
-</ul>
-
-@* <h2>Atrybuty</h2>
-
-<ul>
-    @foreach (var status in Model.Atrybuty)
     {
         <li>@status.Name</li>
     }
 </ul> *@
 
-@* <h1>Statusy i Atrybuty</h1>
-
-<!-- Przykład wyświetlania danych dla StatusModel -->
-<h2>Status</h2>
-<p>@Model.Status</p>
-
-<!-- Przykład wyświetlania danych dla AtrybutyModel -->
-<h2>Atrybuty</h2>
-<p>@Model.Atrybuty</p> *@
+@if (Model.Status != null && Model.Status.Any())
+{
+    <ul>
+        @foreach (var status in Model.Status)
+        {
+            <li>@status.Name</li>
+        }
+    </ul>
+}
+else
+{
+    <p>Brak statusów do wyświetlenia.</p>
+}
 

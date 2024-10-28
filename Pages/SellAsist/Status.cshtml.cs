@@ -13,10 +13,12 @@ namespace Sellasist_Optima.Pages
     public class StatusModel : PageModel
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly SellAsistContext _context;
+        //private readonly SellAsistContext _context;
+        private readonly ConfigurationContext _context;
         public List<Status> Status { get; set; }
 
-        public StatusModel(IHttpClientFactory httpClientFactory, SellAsistContext context)
+        //public StatusModel(IHttpClientFactory httpClientFactory, SellAsistContext context)
+        public StatusModel(IHttpClientFactory httpClientFactory, ConfigurationContext context)
         {
             _httpClientFactory = httpClientFactory;
             _context = context;
@@ -28,7 +30,7 @@ namespace Sellasist_Optima.Pages
             if (apiInfo != null)
             {
                 HttpClient client = _httpClientFactory.CreateClient();
-                client.BaseAddress = new Uri(apiInfo.API);
+                client.BaseAddress = new Uri(apiInfo.ShopName);
                 client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
 
                 HttpResponseMessage response = await client.GetAsync("/api/v1/statuses");

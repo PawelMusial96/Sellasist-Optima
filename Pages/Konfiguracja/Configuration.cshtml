@@ -1,0 +1,102 @@
+﻿@page
+@model Sellasist_Optima.Pages.Konfiguracja.ConfigurationModel
+
+<h2>Konfiguracja</h2>
+<h3>Proszę o uzupełnienie poniższych pól</h3>
+
+
+<form method="post">
+    <!-- Sellasist API Section -->
+    <h4>Sellasist API</h4>
+    <div>
+        <label>Name Shop:</label>
+        <input type="text" asp-for="SellAsistAPI.ShopName" required />
+    </div>
+    <div>
+        <label>API Key:</label>
+        <input type="text" asp-for="SellAsistAPI.KeyAPI" required />
+    </div>
+    <input type="submit" value="Connect API" asp-page-handler="ConnectAPI" />
+
+@*     <!-- Web API Section -->
+    <h4>WebAPI Optima</h4>
+    <div>
+        <label>Login:</label>
+        <input type="text" asp-for="Login" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" asp-for="Password" />
+    </div>
+    <div>
+        <label>Key Api:</label>
+        <input type="text" asp-for="KeyApi" />
+    </div> *@
+
+    @* <input type="submit" value="Connect WebApi" asp-page-handler="ConnectWebAPI" /> *@
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-info mt-3">
+        @Model.Message
+    </div>
+}
+
+<h4>Zapisane API SellAsist:</h4>
+<table>
+    <tr>
+        <th>Name Shop</th>
+        <th>API Key</th>
+    </tr>
+    @foreach (var item in Model.AllSellAsistAPI)
+    {
+        <tr>
+            <td>@item.ShopName</td>
+            <td>@item.KeyAPI</td>
+        </tr>
+    }
+</table>
+
+<form method="post">
+    <!-- Web API Section -->
+    <h4>WebAPI Optima</h4>
+    <div>
+        <label>Login:</label>
+        <input type="text" asp-for="Login" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" asp-for="Password" />
+    </div>
+    <div>
+        <label>Key Api:</label>
+        <input type="text" asp-for="KeyApi" />
+    </div>
+
+    <input type="submit" value="Connect WebApi" asp-page-handler="ConnectWebAPI" />
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-info mt-3">
+        @Model.Message
+    </div>
+}
+
+
+
+<h4>Zapisane WEBAPI Optima:</h4>
+<table>
+    <tr>
+        <th>Login</th>
+        <th>API Key</th>
+    </tr>
+    @foreach (var item in Model.AllWebApiClient)
+    {
+        <tr>
+            <td>@item.Login</td>
+            <td>@item.KeyWebAPI</td>
+        </tr>
+    }
+</table>

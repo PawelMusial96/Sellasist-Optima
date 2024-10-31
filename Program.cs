@@ -15,11 +15,13 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UserContext>();
 
-builder.Services.AddDbContext<SellAsistContext>(options => options.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<SellAsistContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ConfigurationContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient("SellAsistApiClient");
 
-builder.Services.AddScoped<SellAsistContext>();
+//builder.Services.AddScoped<SellAsistContext>();
+builder.Services.AddScoped<ConfigurationContext>();
 
 var app = builder.Build();
 

@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace Sellasist_Optima.Migrations
+namespace Sellasist_Optima.Migrations.User
 {
     /// <inheritdoc />
-    public partial class APILIST : Migration
+    public partial class name1praca : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

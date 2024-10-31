@@ -7,10 +7,10 @@ using Sellasist_Optima.BazyDanych;
 
 #nullable disable
 
-namespace Sellasist_Optima.Migrations.SellAsist
+namespace Sellasist_Optima.Migrations
 {
-    [DbContext(typeof(SellAsistContext))]
-    partial class SellAsistContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ConfigurationContext))]
+    partial class ConfigurationContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -29,12 +29,12 @@ namespace Sellasist_Optima.Migrations.SellAsist
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("API")
+                    b.Property<string>("KeyAPI")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("KeyAPI")
+                    b.Property<string>("ShopName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -42,6 +42,34 @@ namespace Sellasist_Optima.Migrations.SellAsist
                     b.HasKey("Id");
 
                     b.ToTable("SellAsistAPI");
+                });
+
+            modelBuilder.Entity("Sellasist_Optima.WebApiModels.WebApiClient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("KeyWebAPI")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WebApiClient");
                 });
 #pragma warning restore 612, 618
         }

@@ -21,9 +21,11 @@ namespace Sellasist_Optima.Pages.SellAsist
 
 
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly SellAsistContext _context;
+        //private readonly SellAsistContext _context;
+        private readonly ConfigurationContext _context;
 
-        public AtrybutyModel(IHttpClientFactory httpClientFactory, SellAsistContext context)
+        //public AtrybutyModel(IHttpClientFactory httpClientFactory, SellAsistContext context)
+        public AtrybutyModel(IHttpClientFactory httpClientFactory, ConfigurationContext context)
         {
             _httpClientFactory = httpClientFactory;
             _context = context;
@@ -53,7 +55,7 @@ namespace Sellasist_Optima.Pages.SellAsist
             try
             {
                 HttpClient client = _httpClientFactory.CreateClient();
-                client.BaseAddress = new Uri(apiInfo.API);
+                client.BaseAddress = new Uri(apiInfo.ShopName);
                 client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -91,7 +93,7 @@ namespace Sellasist_Optima.Pages.SellAsist
             }
 
             HttpClient client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri(apiInfo.API);
+            client.BaseAddress = new Uri(apiInfo.ShopName);
             client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
 
             HttpResponseMessage responseatrybutygrupa = await client.GetAsync("/api/v1/attributes_groups");

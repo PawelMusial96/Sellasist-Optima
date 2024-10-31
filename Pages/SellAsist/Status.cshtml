@@ -3,7 +3,19 @@
 
 <h2>Statusy</h2>
 
+<<<<<<< HEAD
 @if (Model.Status != null && Model.Status.Count > 0)
+=======
+
+@* <ul>
+    @foreach (var status in Model.Status)
+    {
+        <li>@status.Name</li>
+    }
+</ul> *@
+
+@if (Model.Status != null && Model.Status.Any())
+>>>>>>> 13e630743216aa0d0d9d00f24e427d87a3cef58b
 {
     <ul>
         @foreach (var status in Model.Status)
@@ -14,8 +26,13 @@
 }
 else
 {
+<<<<<<< HEAD
     <p>Brak logowania do SellAsist</p>
     <p>Przejdź na zakładkę API</p>
 }
 
+=======
+    <p>Brak statusów do wyświetlenia.</p>
+}
+>>>>>>> 13e630743216aa0d0d9d00f24e427d87a3cef58b
 

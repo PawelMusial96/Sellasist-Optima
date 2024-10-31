@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Sellasist_Optima.Models
@@ -8,9 +9,10 @@ namespace Sellasist_Optima.Models
         public int Id { get; set; }
 
         [Required]
-        public string API { get; set; }
+        public string ShopName { get; set; }
 
         [Required]
+        [PasswordPropertyText]
         public string KeyAPI { get; set; }
 
         //[Required]

@@ -21,10 +21,7 @@ namespace Sellasist_Optima.Pages.SellAsist
 
 
         private readonly IHttpClientFactory _httpClientFactory;
-        //private readonly SellAsistContext _context;
         private readonly ConfigurationContext _context;
-
-        //public AtrybutyModel(IHttpClientFactory httpClientFactory, SellAsistContext context)
         public AtrybutyModel(IHttpClientFactory httpClientFactory, ConfigurationContext context)
         {
             _httpClientFactory = httpClientFactory;
@@ -116,7 +113,7 @@ namespace Sellasist_Optima.Pages.SellAsist
                         AtrybutyByGroup[group.Id] = new List<AtrybutyGrupy>();
                     }
                 }
-}
+            }
         }
     }
 }

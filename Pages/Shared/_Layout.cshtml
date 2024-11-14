@@ -46,6 +46,21 @@
                                 <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/Atrybuty">Atrybuty</a>
                             </li>
                         }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/WebAPI/DocumentAttributes">Atrybuty Dokumentu</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/WebAPI/MapowanieArtybutów">Mapowanie Artybutów</a>
+                            </li>
+                        }
+
+
+                        
                     </ul>
                 </div>
     

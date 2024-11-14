@@ -1,0 +1,68 @@
+﻿@page
+@model Sellasist_Optima.Pages.WebAPI.MapowanieArtybutówModel
+
+@{
+    ViewData["Title"] = "Mapowanie Atrybutów";
+}
+
+<h1>Mapowanie Atrybutów Towaru</h1>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<form method="post">
+    <div class="form-group">
+        <label>Wybierz atrybuty:</label>
+        <select name="WebApiAttributeId" class="form-control">
+            @foreach (var webApiAttr in Model.WebApiAttributes)
+            {
+                <option value="@webApiAttr.Id">@webApiAttr.Name @* (@webApiAttr.Id) *@</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Wybierz atrybut z Sellasist API:</label>
+        <select name="SellAsistAttributeId" class="form-control">
+            @foreach (var sellAsistAttr in Model.SellAsistAttributes)
+            {
+                <option value="@sellAsistAttr.Id">@sellAsistAttr.Name @* (@sellAsistAttr.Id) *@</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Mapuj Atrybuty</button>
+</form>
+
+<h2>Mapowanie</h2>
+@if (Model.AttributeMappings != null && Model.AttributeMappings.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Atrybut z WebAPI</th>
+                <th>Atrybut z Sellasist API</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var mapping in Model.AttributeMappings)
+            {
+                <tr>
+                    <td>@Model.GetWebApiAttributeName(mapping.WebApiAttributeId)</td>
+                    <td>@Model.GetSellAsistAttributeName(mapping.SellAsistAttributeId)</td>
+                    <td>
+                        <form method="post" asp-page-handler="DeleteMapping">
+                            <input type="hidden" name="MappingId" value="@mapping.Id" />
+                            <button type="submit" class="btn btn-danger">Usuń</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Brak mapowań.</p>
+}

@@ -14,10 +14,5 @@ namespace Sellasist_Optima.Models
         [Required]
         [PasswordPropertyText]
         public string KeyAPI { get; set; }
-
-        //[Required]
-        //public string UserId { get; set; } // ID zalogowanego użytkownika
-
     }
-
 }

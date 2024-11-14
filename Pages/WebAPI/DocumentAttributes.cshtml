@@ -1,0 +1,46 @@
+﻿
+@page
+@model Sellasist_Optima.Pages.WebAPI.DocumentAttributesModel
+
+<h1>Atrybuty dokumentu</h1>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    </div>
+}
+
+@if (Model.Attributes != null && Model.Attributes.Any())
+{
+    <ul>
+        @foreach (var group in Model.Attributes)
+        {
+            <li>
+                <strong>@group.Name</strong> (ID: @group.Id)
+                <ul>
+                    <li>Code: @group.Code</li>
+                    <li>Type: @group.Type</li>
+                    <li>Format: @group.Format</li>
+                    @if (group.Values != null && group.Values.Any())
+                    {
+                        <li>Values:
+                            <ul>
+                                @foreach (var value in group.Values)
+                                {
+                                    <li>@value</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Nie znaleziono atrybutów.</p>
+}

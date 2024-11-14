@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sellasist_Optima.Mapping;
 using Sellasist_Optima.Models;
 using Sellasist_Optima.WebApiModels;
 
@@ -31,11 +32,12 @@ namespace Sellasist_Optima.BazyDanych
                 .HasMaxLength(255); // Maksymalna długość nazwy (255 znaków)
 
             //WebAPI
+
             builder.Entity<WebApiClient>()
                 .HasKey(a => a.Id);
 
             builder.Entity<WebApiClient>()
-               .Property(a => a.Login)
+               .Property(a => a.Username)
                .IsRequired()
                .HasMaxLength(255);
 
@@ -45,19 +47,19 @@ namespace Sellasist_Optima.BazyDanych
                .HasMaxLength(255);
 
             builder.Entity<WebApiClient>()
-               .Property(a => a.KeyWebAPI)
+               .Property(a => a.Grant_type)
                .IsRequired()
                .HasMaxLength(255);
 
-
-
-            //builder.Entity<SellAsistAPI>()
-            //    .HasOne<IdentityUser>()
-            //    .WithMany()
-            //    .HasForeignKey(a => a.UserId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-
+            builder.Entity<WebApiClient>()
+               .Property(a => a.Localhost)
+               .IsRequired()
+               .HasMaxLength(255);
+            
+            builder.Entity<WebApiClient>()
+              .Property(a => a.TokenAPI)
+              .IsRequired()
+              .HasMaxLength(400);
 
             base.OnModelCreating(builder);
 
@@ -65,6 +67,7 @@ namespace Sellasist_Optima.BazyDanych
 
         public DbSet<SellAsistAPI> SellAsistAPI { get; set; }
         public DbSet<WebApiClient> WebApiClient { get; set; }
+        public DbSet<AttributeMappingModels> AttributeMappings { get; set; }
 
     }
 }

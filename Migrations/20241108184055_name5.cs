@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace Sellasist_Optima.Migrations.SellAsist
+namespace Sellasist_Optima.Migrations.Configuration
 {
     /// <inheritdoc />
-    public partial class Eltesbaza : Migration
+    public partial class name5 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

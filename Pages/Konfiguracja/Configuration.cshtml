@@ -1,4 +1,5 @@
-﻿@page
+﻿
+@page
 @model Sellasist_Optima.Pages.Konfiguracja.ConfigurationModel
 
 <h2>Konfiguracja</h2>
@@ -6,7 +7,6 @@
 
 
 <form method="post">
-    <!-- Sellasist API Section -->
     <h4>Sellasist API</h4>
     <div>
         <label>Name Shop:</label>
@@ -14,26 +14,10 @@
     </div>
     <div>
         <label>API Key:</label>
-        <input type="text" asp-for="SellAsistAPI.KeyAPI" required />
+        <input type="password" asp-for="SellAsistAPI.KeyAPI" required />
     </div>
     <input type="submit" value="Connect API" asp-page-handler="ConnectAPI" />
 
-@*     <!-- Web API Section -->
-    <h4>WebAPI Optima</h4>
-    <div>
-        <label>Login:</label>
-        <input type="text" asp-for="Login" />
-    </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" asp-for="Password" />
-    </div>
-    <div>
-        <label>Key Api:</label>
-        <input type="text" asp-for="KeyApi" />
-    </div> *@
-
-    @* <input type="submit" value="Connect WebApi" asp-page-handler="ConnectWebAPI" /> *@
 </form>
 
 @if (!string.IsNullOrEmpty(Model.Message))
@@ -54,24 +38,34 @@
         <tr>
             <td>@item.ShopName</td>
             <td>@item.KeyAPI</td>
+            @* <td>
+                <a asp-page-handler="Edit" asp-route="@item.Id">Edytuj API</a>
+            </td> *@
         </tr>
     }
 </table>
 
 <form method="post">
-    <!-- Web API Section -->
     <h4>WebAPI Optima</h4>
     <div>
-        <label>Login:</label>
-        <input type="text" asp-for="Login" />
+        <label>Username:</label>
+        <input type="text" asp-for="WebApiClient.Username" required />
     </div>
     <div>
         <label>Password:</label>
-        <input type="password" asp-for="Password" />
+        <input type="password" asp-for="WebApiClient.Password" required />
     </div>
     <div>
-        <label>Key Api:</label>
-        <input type="text" asp-for="KeyApi" />
+        <label>Grant Type:</label>
+        <input type="text" asp-for="WebApiClient.Grant_type" required />
+    </div>
+    <div>
+        <label>Localhost:</label>
+        <input type="text" asp-for="WebApiClient.Localhost" required />
+    </div>
+    <div>
+        <label>TokenAPI:</label>
+        <input type="password" asp-for="WebApiClient.TokenAPI" required />
     </div>
 
     <input type="submit" value="Connect WebApi" asp-page-handler="ConnectWebAPI" />
@@ -84,19 +78,23 @@
     </div>
 }
 
-
-
-<h4>Zapisane WEBAPI Optima:</h4>
+<h4>Saved WebAPI Optima:</h4>
 <table>
     <tr>
-        <th>Login</th>
-        <th>API Key</th>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Grant Type</th>
+        <th>Localhost</th>
+        <th>TokenAPI</th>
     </tr>
     @foreach (var item in Model.AllWebApiClient)
     {
         <tr>
-            <td>@item.Login</td>
-            <td>@item.KeyWebAPI</td>
+            <td>@item.Username</td>
+            <td>@item.Password</td>
+            <td>@item.Grant_type</td>
+            <td>@item.Localhost</td>
+            <td>@item.TokenAPI</td>
         </tr>
-    }
+    }   
 </table>

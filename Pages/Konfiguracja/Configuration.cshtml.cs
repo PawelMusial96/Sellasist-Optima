@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
 using Sellasist_Optima.BazyDanych;
 using Sellasist_Optima.Models;
 using Sellasist_Optima.WebApiModels;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace Sellasist_Optima.Pages.Konfiguracja
 {
@@ -11,40 +15,77 @@ namespace Sellasist_Optima.Pages.Konfiguracja
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly ConfigurationContext _context;
-        private readonly ConfigurationContext _context2;
 
         [BindProperty]
+        [ValidateNever]
         public SellAsistAPI SellAsistAPI { get; set; }
 
+        [BindProperty]
+        [ValidateNever]
         public WebApiClient WebApiClient { get; set; }
+
         public List<SellAsistAPI> AllSellAsistAPI { get; set; } = new List<SellAsistAPI>();
-
         public List<WebApiClient> AllWebApiClient { get; set; } = new List<WebApiClient>();
-
-        [BindProperty]
-        public string KeyApi { get; set; }
-        [BindProperty]
-        public string Login { get; set; }
-        [BindProperty]
-        public string Password { get; set; }
 
         public string Message { get; set; }
 
-        public ConfigurationModel(IHttpClientFactory clientFactory, ConfigurationContext context, ConfigurationContext context2)
+        public ConfigurationModel(IHttpClientFactory clientFactory, ConfigurationContext context)
         {
             _clientFactory = clientFactory;
             _context = context;
-            _context2 = context2;
         }
 
         public async Task OnGetAsync()
         {
             AllSellAsistAPI = await _context.SellAsistAPI.ToListAsync();
+            AllWebApiClient = await _context.WebApiClient.ToListAsync();
         }
+
+        public async Task<IActionResult> OnPostConnectWebAPIAsync()
+        {
+            try
+            {
+                bool exists = await _context.WebApiClient.AnyAsync(w =>
+                    w.Username == WebApiClient.Username &&
+                    w.Password == WebApiClient.Password &&
+                    w.Grant_type == WebApiClient.Grant_type &&
+                    w.TokenAPI == WebApiClient.TokenAPI);
+
+                if (!exists)
+                {
+                    _context.WebApiClient.Add(WebApiClient);
+                    int saved = await _context.SaveChangesAsync();
+                    Message = saved > 0 ? "Web API connection saved successfully." : "Failed to save Web API connection.";
+                }
+                else
+                {
+                    Message = "This Web API client already exists.";
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = $"Error saving Web API client: {ex.Message}";
+            }
+
+            AllSellAsistAPI = await _context.SellAsistAPI.ToListAsync();
+            AllWebApiClient = await _context.WebApiClient.ToListAsync();
+            return Page();
+        }
+
+        //public async Task<IActionResult> OnGetEditAsync(int id)
+        //{
+        //    SellAsistAPI = await _context.SellAsistAPI.FindAsync(id);
+        //    if (SellAsistAPI == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    //await LoadDataAsync();
+        //    return Page();
+        //}
 
         public async Task<IActionResult> OnPostConnectAPIAsync()
         {
-            // Sellasist API Logic
             var client = _clientFactory.CreateClient("SellAsistApiClient");
             client.BaseAddress = new Uri(SellAsistAPI.ShopName);
             client.DefaultRequestHeaders.Add("apiKey", SellAsistAPI.KeyAPI);
@@ -63,25 +104,10 @@ namespace Sellasist_Optima.Pages.Konfiguracja
                 Message = "This Sellasist API already exists.";
             }
 
-            // Web API Logic (login validation, etc.)
-            if (!string.IsNullOrEmpty(Login) && !string.IsNullOrEmpty(Password))
-            {
-                // Perform Web API connection logic here.
-                // For demonstration, we'll assume it just appends to the message.
-                Message += " | Web API connected.";
-            }
-
             AllSellAsistAPI = await _context.SellAsistAPI.ToListAsync();
 
+
             return Page();
         }
-
-        public async Task<IActionResult> OnPostConnectWebAPIAsync()
-        {
-            AllWebApiClient = await _context.WebApiClient.ToListAsync();
-            return Page();
-        }
-
-
-        }
+    }
 }

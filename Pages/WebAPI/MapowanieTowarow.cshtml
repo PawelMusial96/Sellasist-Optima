@@ -1,0 +1,71 @@
+﻿@page
+@model Sellasist_Optima.Pages.WebAPI.MapowanieTowarowModel
+@{
+    ViewData["Title"] = "Mapowanie towarów";
+}
+
+@{
+    ViewData["Title"] = "Mapowanie Towarów";
+}
+
+<h1>Mapowanie Towarów</h1>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<form method="post">
+    <div class="form-group">
+        <label>Wybierz towar z SellAsist:</label>
+        <select name="SellAsistProductId" class="form-control">
+            @foreach (var sap in Model.SellAsistProducts)
+            {
+                <option value="@sap.Id">@sap.Name (@sap.EAN)</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Wybierz towar z WebAPI:</label>
+        <select name="WebApiProductId" class="form-control">
+            @foreach (var wap in Model.WebApiProducts)
+            {
+                <option value="@wap.Id">@wap.Name (@wap.barcode)</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Mapuj Towary</button>
+</form>
+
+<h2>Mapowanie</h2>
+@if (Model.ProductMappings != null && Model.ProductMappings.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Towar z SellAsist</th>
+                <th>Towar z WebAPI</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var mapping in Model.ProductMappings)
+            {
+                <tr>
+                    <td>@Model.GetSellAsistProductName(mapping.SellAsistProductId)</td>
+                    <td>@Model.GetWebApiProductName(mapping.WebApiProductId)</td>
+                    <td>
+                        <form method="post" asp-page-handler="DeleteMapping">
+                            <input type="hidden" name="MappingId" value="@mapping.Id" />
+                            <button type="submit" class="btn btn-danger">Usuń</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Brak mapowań.</p>
+}

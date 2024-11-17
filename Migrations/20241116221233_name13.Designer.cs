@@ -2,17 +2,20 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sellasist_Optima.BazyDanych;
 
 #nullable disable
 
-namespace Sellasist_Optima.Migrations
+namespace Sellasist_Optima.Migrations.Configuration
 {
     [DbContext(typeof(ConfigurationContext))]
-    partial class ConfigurationContextModelSnapshot : ModelSnapshot
+    [Migration("20241116221233_name13")]
+    partial class name13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

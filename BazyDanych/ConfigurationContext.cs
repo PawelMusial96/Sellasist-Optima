@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sellasist_Optima.Mapping;
 using Sellasist_Optima.Models;
+using Sellasist_Optima.SellAsistModels;
 using Sellasist_Optima.WebApiModels;
 
 namespace Sellasist_Optima.BazyDanych
@@ -61,13 +62,13 @@ namespace Sellasist_Optima.BazyDanych
               .IsRequired()
               .HasMaxLength(400);
 
-            base.OnModelCreating(builder);
 
         }
 
         public DbSet<SellAsistAPI> SellAsistAPI { get; set; }
         public DbSet<WebApiClient> WebApiClient { get; set; }
         public DbSet<AttributeMappingModels> AttributeMappings { get; set; }
+        public DbSet<ProductMapping> ProductMappings { get; set; }
 
     }
 }

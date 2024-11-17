@@ -58,8 +58,20 @@
                                 <a class="nav-link text-dark" asp-area="" asp-page="/WebAPI/MapowanieArtybutów">Mapowanie Artybutów</a>
                             </li>
                         }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/WebAPI/MapowanieTowarow">Mapowanie Towarow</a>
+                            </li>
+                        }
+                        @* @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/WebAPI/MapowanieArtybutów">Mapowanie Artybutów</a>
+                            </li>
+                        } *@
 
-
+                        
                         
                     </ul>
                 </div>

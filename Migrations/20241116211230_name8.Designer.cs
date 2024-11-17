@@ -2,17 +2,20 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sellasist_Optima.BazyDanych;
 
 #nullable disable
 
-namespace Sellasist_Optima.Migrations
+namespace Sellasist_Optima.Migrations.Configuration
 {
     [DbContext(typeof(ConfigurationContext))]
-    partial class ConfigurationContextModelSnapshot : ModelSnapshot
+    [Migration("20241116211230_name8")]
+    partial class name8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,11 +156,11 @@ namespace Sellasist_Optima.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("EAN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("barcode")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -168,21 +171,21 @@ namespace Sellasist_Optima.Migrations
 
             modelBuilder.Entity("Sellasist_Optima.WebApiModels.ProductMapping", b =>
                 {
-                    b.HasOne("Sellasist_Optima.SellAsistModels.SellAsistProduct", "SellAsistProduct")
+                    b.HasOne("Sellasist_Optima.SellAsistModels.SellAsistProduct", "SellAsistProducts")
                         .WithMany()
                         .HasForeignKey("SellAsistProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sellasist_Optima.WebApiModels.WebApiProduct", "WebApiProduct")
+                    b.HasOne("Sellasist_Optima.WebApiModels.WebApiProduct", "WebApiProducts")
                         .WithMany()
                         .HasForeignKey("WebApiProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SellAsistProduct");
+                    b.Navigation("SellAsistProducts");
 
-                    b.Navigation("WebApiProduct");
+                    b.Navigation("WebApiProducts");
                 });
 #pragma warning restore 612, 618
         }

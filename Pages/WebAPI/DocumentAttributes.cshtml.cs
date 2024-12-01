@@ -19,7 +19,7 @@ namespace Sellasist_Optima.Pages.WebAPI
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ConfigurationContext _context;
 
-        public List<DocumentAttributesModels> Attributes { get; set; }
+        public List<DocumentAttributes> Attributes { get; set; }
         public string ErrorMessage { get; set; }
 
         public DocumentAttributesModel(IHttpClientFactory httpClientFactory, ConfigurationContext context)
@@ -55,7 +55,7 @@ namespace Sellasist_Optima.Pages.WebAPI
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    Attributes = JsonConvert.DeserializeObject<List<DocumentAttributesModels>>(jsonResponse);
+                    Attributes = JsonConvert.DeserializeObject<List<DocumentAttributes>>(jsonResponse);
                 }
                 else
                 {

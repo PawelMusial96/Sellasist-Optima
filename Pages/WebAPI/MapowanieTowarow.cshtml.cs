@@ -24,6 +24,11 @@ namespace Sellasist_Optima.Pages.WebAPI
         public List<ProductMapping> ProductMappings { get; set; }
         public string ErrorMessage { get; set; }
 
+        [BindProperty]
+        public bool AutoMapByEAN { get; set; }
+
+        public bool AutoMapBySKU { get; set; }
+
         public MapowanieTowarowModel(IHttpClientFactory httpClientFactory, ConfigurationContext context)
         {
             _httpClientFactory = httpClientFactory;
@@ -39,7 +44,6 @@ namespace Sellasist_Optima.Pages.WebAPI
         {
             try
             {
-                // Sprawdzamy, czy istnieje ju¿ mapowanie dla podanego produktu
                 var existingMapping = await _context.ProductMappings
                     .FirstOrDefaultAsync(m => m.SellAsistProductId == SellAsistProductId);
 
@@ -49,19 +53,17 @@ namespace Sellasist_Optima.Pages.WebAPI
                 }
                 else
                 {
-                    // Tworzymy nowe mapowanie bez sprawdzania tabel SQL
                     var mapping = new ProductMapping
                     {
                         SellAsistProductId = SellAsistProductId,
                         WebApiProductId = WebApiProductId
                     };
                     _context.ProductMappings.Add(mapping);
-                    await _context.SaveChangesAsync(); // Zapisujemy mapowanie
+                    await _context.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
             {
-                // Obs³uga b³êdu i wyœwietlenie szczegó³ów
                 var innerException = ex.InnerException;
                 while (innerException != null)
                 {
@@ -74,51 +76,94 @@ namespace Sellasist_Optima.Pages.WebAPI
                 }
             }
 
-            // Za³aduj produkty ponownie, aby odœwie¿yæ widok
             await LoadProductsAsync();
 
             return Page();
         }
-        //public async Task<IActionResult> OnPostAsync(int SellAsistProductId, int WebApiProductId)
-        //{
-        //    try
-        //    {
-        //        var existingMapping = await _context.ProductMappings
-        //            .FirstOrDefaultAsync(m => m.SellAsistProductId == SellAsistProductId);
 
-        //        if (existingMapping != null)
-        //        {
-        //            ErrorMessage = "Mapowanie dla tego towaru z SellAsist ju¿ istnieje.";
-        //        }
-        //        else
-        //        {
-        //            var mapping = new ProductMapping
-        //            {
-        //                SellAsistProductId = SellAsistProductId,
-        //                WebApiProductId = WebApiProductId
-        //            };
-        //            _context.ProductMappings.Add(mapping);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var innerException = ex.InnerException;
-        //        while (innerException != null)
-        //        {
-        //            ErrorMessage += innerException.Message + " ";
-        //            innerException = innerException.InnerException;
-        //        }
-        //        if (string.IsNullOrEmpty(ErrorMessage))
-        //        {
-        //            ErrorMessage = ex.Message;
-        //        }
-        //    }
+        public async Task<IActionResult> OnPostAutoMapAsync()
+        {
+            try
+            {
+                if (AutoMapByEAN)
+                {
+                    await LoadProductsAsync();
 
-        //    await LoadProductsAsync();
+                    // Pobiernie istniej¹ce mapowania towarów
+                    var existingMappingsEAN = await _context.ProductMappings.ToListAsync();
 
-        //    return Page();
-        //}
+                    foreach (var sap in SellAsistProducts)
+                    {
+                        if (string.IsNullOrEmpty(sap.EAN))
+                            continue;
+
+                        var matchingWebApiProducts = WebApiProducts
+                            .Where(wap => wap.Barcode == sap.EAN)
+                            .ToList();
+
+                        foreach (var wap in matchingWebApiProducts)
+                        {
+                            bool mappingExists = existingMappingsEAN
+                                .Any(m => m.SellAsistProductId == sap.Id && m.WebApiProductId == wap.Id);
+
+                            if (!mappingExists)
+                            {
+                                var mapping = new ProductMapping
+                                {
+                                    SellAsistProductId = sap.Id,
+                                    WebApiProductId = wap.Id
+                                };
+                                _context.ProductMappings.Add(mapping);
+                            }
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                else if (AutoMapBySKU)
+                {
+                    await LoadProductsAsync();
+
+                    // Pobiernie istniej¹ce mapowania towarów
+                    var existingMappingsSKU = await _context.ProductMappings.ToListAsync();
+
+                    foreach (var sap in SellAsistProducts)
+                    {
+                        if (string.IsNullOrEmpty(sap.Symbol))
+                            continue;
+
+                        var matchingWebApiProducts = WebApiProducts
+                            .Where(wap => wap.Code == sap.Symbol)
+                            .ToList();
+
+                        foreach (var wap in matchingWebApiProducts)
+                        {
+                            bool mappingExists = existingMappingsSKU
+                                .Any(m => m.SellAsistProductId == sap.Id && m.WebApiProductId == wap.Id);
+
+                            if (!mappingExists)
+                            {
+                                var mapping = new ProductMapping
+                                {
+                                    SellAsistProductId = sap.Id,
+                                    WebApiProductId = wap.Id
+                                };
+                                _context.ProductMappings.Add(mapping);
+                            }
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Wyst¹pi³ b³¹d podczas automatycznego mapowania: {ex.Message}";
+            }
+
+            await LoadProductsAsync();
+
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostDeleteMappingAsync(int MappingId)
         {
@@ -145,7 +190,7 @@ namespace Sellasist_Optima.Pages.WebAPI
         {
             await LoadSellAsistProductsAsync();
             await LoadWebApiProductsAsync();
-            ProductMappings = await _context.ProductMappings.ToListAsync(); // Dodano liniê
+            ProductMappings = await _context.ProductMappings.ToListAsync();
         }
 
         private async Task LoadSellAsistProductsAsync()
@@ -223,7 +268,7 @@ namespace Sellasist_Optima.Pages.WebAPI
         public string GetWebApiProductName(int id)
         {
             var product = WebApiProducts.FirstOrDefault(p => p.Id == id);
-            return product != null ? $"{product.Name} ({product.barcode})" : "Nieznany";
+            return product != null ? $"{product.Name} ({product.Barcode})" : "Nieznany";
         }
     }
 }

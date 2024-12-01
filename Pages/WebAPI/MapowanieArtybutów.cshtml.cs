@@ -22,7 +22,7 @@ namespace Sellasist_Optima.Pages.WebAPI
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ConfigurationContext _context;
 
-        public List<DocumentAttributesModels> WebApiAttributes { get; set; } = new List<DocumentAttributesModels>();
+        public List<DocumentAttributes> WebApiAttributes { get; set; } = new List<DocumentAttributes>();
         public List<Atrybuty> SellAsistAttributes { get; set; } = new List<Atrybuty>();
         public List<AttributeMappingModels> AttributeMappings { get; set; }
         public string ErrorMessage { get; set; }
@@ -120,7 +120,7 @@ namespace Sellasist_Optima.Pages.WebAPI
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var allAttributes = JsonConvert.DeserializeObject<List<DocumentAttributesModels>>(jsonResponse);
+                    var allAttributes = JsonConvert.DeserializeObject<List<DocumentAttributes>>(jsonResponse);
 
                     WebApiAttributes = allAttributes.Where(attr => attr.Type == 1).ToList();
                 }
@@ -178,5 +178,195 @@ namespace Sellasist_Optima.Pages.WebAPI
             var attr = SellAsistAttributes.FirstOrDefault(a => a.Id == id);
             return attr != null ? attr.Name : "Unknown";
         }
+
+        public async Task<IActionResult> OnPostSendAttributesAsync()
+        {
+            var webapiInfo = await _context.WebApiClient.FirstOrDefaultAsync();
+            var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync();
+
+            if (webapiInfo == null || apiInfo == null)
+            {
+                ErrorMessage = "Konfiguracja API nie znaleziona.";
+                await LoadAttributesAsync();
+                return Page();
+            }
+
+            try
+            {
+                HttpClient webApiClient = _httpClientFactory.CreateClient();
+                var baseAddress = webapiInfo.Localhost.StartsWith("http") ? webapiInfo.Localhost : "http://" + webapiInfo.Localhost;
+                webApiClient.BaseAddress = new Uri(baseAddress);
+                webApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", webapiInfo.TokenAPI);
+
+                HttpClient sellAsistClient = _httpClientFactory.CreateClient();
+                sellAsistClient.BaseAddress = new Uri(apiInfo.ShopName);
+                sellAsistClient.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
+
+                var productMappings = await _context.ProductMappings.ToListAsync();
+                var attributeMappings = await _context.AttributeMappings.ToListAsync();
+
+                foreach (var productMapping in productMappings)
+                {
+                    int webApiProductId = productMapping.WebApiProductId;
+                    int sellAsistProductId = productMapping.SellAsistProductId;
+
+                    var attributesToUpdate = new List<object>();
+
+                    foreach (var attributeMapping in attributeMappings)
+                    {
+                        int webApiAttributeId = attributeMapping.WebApiAttributeId;
+                        int sellAsistAttributeId = attributeMapping.SellAsistAttributeId;
+
+                        // Pobierz wartość atrybutu z WebApi
+                        string requestUrl = $"/api/Items/{webApiProductId}/Attributes/{webApiAttributeId}";
+
+                        HttpResponseMessage response = await webApiClient.GetAsync(requestUrl);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var jsonResponse = await response.Content.ReadAsStringAsync();
+                            var attributeValue = JsonConvert.DeserializeObject<WebApiAttributeValue>(jsonResponse);
+
+                            if (attributeValue != null && !string.IsNullOrEmpty(attributeValue.Value))
+                            {
+                                // Dodaj atrybut do listy do aktualizacji
+                                attributesToUpdate.Add(new
+                                {
+                                    id = sellAsistAttributeId,
+                                    property_text_value = attributeValue.Value
+                                });
+                            }
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            // Atrybut nie znaleziony dla tego produktu w WebApi, pomiń
+                            continue;
+                        }
+                        else
+                        {
+                            ErrorMessage += $"Błąd podczas pobierania atrybutu {webApiAttributeId} dla produktu {webApiProductId} z WebApi. ";
+                        }
+                    }
+
+                    if (attributesToUpdate.Any())
+                    {
+                        // Wyślij wartości atrybutów do SellAsist
+                        string sellAsistUrl = $"/api/v1/products/{sellAsistProductId}";
+
+                        var sellAsistProductUpdate = new
+                        {
+                            attributes = attributesToUpdate
+                        };
+
+                        var content = new StringContent(JsonConvert.SerializeObject(sellAsistProductUpdate), Encoding.UTF8, "application/json");
+
+                        HttpResponseMessage sellAsistResponse = await sellAsistClient.PutAsync(sellAsistUrl, content);
+
+                        if (!sellAsistResponse.IsSuccessStatusCode)
+                        {
+                            var responseContent = await sellAsistResponse.Content.ReadAsStringAsync();
+                            ErrorMessage += $"Nie udało się zaktualizować atrybutów dla produktu {sellAsistProductId} w SellAsist. Szczegóły: {responseContent} ";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Wystąpił błąd: {ex.Message}";
+            }
+
+            await LoadAttributesAsync();
+
+            return Page();
+        }
+
+        //public async Task<IActionResult> OnPostSendAttributesAsync()
+        //{
+        //    var webapiInfo = await _context.WebApiClient.FirstOrDefaultAsync();
+        //    var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync();
+
+        //    if (webapiInfo == null || apiInfo == null)
+        //    {
+        //        ErrorMessage = "Konfiguracja API nie znaleziona.";
+        //        await LoadAttributesAsync();
+        //        return Page();
+        //    }
+
+        //    try
+        //    {
+        //        HttpClient webApiClient = _httpClientFactory.CreateClient();
+        //        var baseAddress = webapiInfo.Localhost.StartsWith("http") ? webapiInfo.Localhost : "http://" + webapiInfo.Localhost;
+        //        webApiClient.BaseAddress = new Uri(baseAddress);
+        //        webApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", webapiInfo.TokenAPI);
+
+        //        HttpClient sellAsistClient = _httpClientFactory.CreateClient();
+        //        sellAsistClient.BaseAddress = new Uri(apiInfo.ShopName);
+        //        sellAsistClient.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
+
+        //        var productMappings = await _context.ProductMappings.ToListAsync();
+        //        var attributeMappings = await _context.AttributeMappings.ToListAsync();
+
+        //        foreach (var productMapping in productMappings)
+        //        {
+        //            int webApiProductId = productMapping.WebApiProductId;
+        //            int sellAsistProductId = productMapping.SellAsistProductId;
+
+        //            foreach (var attributeMapping in attributeMappings)
+        //            {
+        //                int webApiAttributeId = attributeMapping.WebApiAttributeId;
+        //                int sellAsistAttributeId = attributeMapping.SellAsistAttributeId;
+
+        //                // Pobierz wartość atrybutu z WebApi
+        //                string requestUrl = $"/api/Items/{webApiProductId}/Attributes/{webApiAttributeId}";
+
+        //                HttpResponseMessage response = await webApiClient.GetAsync(requestUrl);
+
+        //                if (response.IsSuccessStatusCode)
+        //                {
+        //                    var jsonResponse = await response.Content.ReadAsStringAsync();
+        //                    var attributeValue = JsonConvert.DeserializeObject<WebApiAttributeValue>(jsonResponse);
+
+        //                    if (attributeValue != null && !string.IsNullOrEmpty(attributeValue.Value))
+        //                    {
+        //                        // Wyślij wartość atrybutu do SellAsist
+        //                        string sellAsistUrl = $"/api/v1/products/{sellAsistProductId}/attributes/{sellAsistAttributeId}";
+
+        //                        var sellAsistAttributeValue = new
+        //                        {
+        //                            value = attributeValue.Value
+        //                        };
+
+        //                        var content = new StringContent(JsonConvert.SerializeObject(sellAsistAttributeValue), Encoding.UTF8, "application/json");
+
+        //                        HttpResponseMessage sellAsistResponse = await sellAsistClient.PutAsync(sellAsistUrl, content);
+
+        //                        if (!sellAsistResponse.IsSuccessStatusCode)
+        //                        {
+        //                            ErrorMessage += $"Nie udało się zaktualizować atrybutu dla produktu {sellAsistProductId} w SellAsist. ";
+        //                        }
+        //                    }
+        //                }
+        //                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        //                {
+        //                    // Atrybut nie znaleziony dla tego produktu w WebApi, pomiń
+        //                    continue;
+        //                }
+        //                else
+        //                {
+        //                    ErrorMessage += $"Błąd podczas pobierania atrybutu {webApiAttributeId} dla produktu {webApiProductId} z WebApi. ";
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ErrorMessage = $"Wystąpił błąd: {ex.Message}";
+        //    }
+
+        //    await LoadAttributesAsync();
+
+        //    return Page();
+        //}
+
     }
 }

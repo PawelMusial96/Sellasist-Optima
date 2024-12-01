@@ -4,10 +4,6 @@
     ViewData["Title"] = "Mapowanie towarów";
 }
 
-@{
-    ViewData["Title"] = "Mapowanie Towarów";
-}
-
 <h1>Mapowanie Towarów</h1>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
@@ -21,7 +17,7 @@
         <select name="SellAsistProductId" class="form-control">
             @foreach (var sap in Model.SellAsistProducts)
             {
-                <option value="@sap.Id">@sap.Name (@sap.EAN)</option>
+                <option value="@sap.Id">@sap.Name (EAN = @sap.EAN)/(SKU = @sap.Symbol)</option>
             }
         </select>
     </div>
@@ -30,14 +26,27 @@
         <select name="WebApiProductId" class="form-control">
             @foreach (var wap in Model.WebApiProducts)
             {
-                <option value="@wap.Id">@wap.Name (@wap.barcode)</option>
+                <option value="@wap.Id">@wap.Name (EAN = @wap.Barcode)/(SKU = @wap.Code)</option>
             }
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Mapuj Towary</button>
 </form>
 
-<h2>Mapowanie</h2>
+<h2>Automatyczne Mapowanie</h2>
+<form method="post" asp-page-handler="AutoMap">
+    <div class="form-group">
+        <label>
+            <input type="checkbox" asp-for="AutoMapByEAN" /> Automatycznie mapuj towary po EAN
+        </label>
+        <label>
+            <input type="checkbox" asp-for="AutoMapBySKU" /> Automatycznie mapuj towary po SKU
+        </label>
+    </div>
+    <button type="submit" class="btn btn-secondary">Automatycznie Mapuj</button>
+</form>
+
+<h2>Mapowania</h2>
 @if (Model.ProductMappings != null && Model.ProductMappings.Any())
 {
     <table class="table">

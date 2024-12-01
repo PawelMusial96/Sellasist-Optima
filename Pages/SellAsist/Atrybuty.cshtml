@@ -19,13 +19,63 @@
         @foreach (var group in Model.AtrybutyGrupa)
         {
             <li>
-                <strong>@group.Name @* (@group.Id) *@</strong>
+                <h3>@group.Name</h3>
+                <ul>
+                    @if (group.Attributes != null && group.Attributes.Any())
+                    {
+                        @foreach (var attr in group.Attributes)
+                        {
+                            <li>
+                                <strong>@attr.Name</strong>
+                                @* <ul> *@
+                                    @* <li><strong>Id:</strong> @attr.Id</li> *@
+                                    @* <li><strong>Kod:</strong> @attr.Code</li> *@
+                                    @* <li><strong>Typ:</strong> @attr.Type</li> *@
+                                    @* <li><strong>Wymagany:</strong> @(attr.Required ? "Tak" : "Nie")</li> *@
+                                    @* <li><strong>Domyślna Wartość:</strong> @attr.DefaultValue</li> *@
+                                    @* @if (attr.Options != null && attr.Options.Any())
+                                    {
+                                        <li>
+                                            <strong>Opcje:</strong>
+                                            <ul>
+                                                @foreach (var option in attr.Options)
+                                                {
+                                                    <li>@option</li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    } *@
+                               @*  </ul> *@
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li>Brak atrybutów w tej grupie.</li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Brak grup atrybutów.</p>
+}
+
+@* @if (Model.AtrybutyGrupa != null && Model.AtrybutyGrupa.Count > 0)
+{
+    <ul>
+        @foreach (var group in Model.AtrybutyGrupa)
+        {
+            <li>
+                <strong>@group.Name</strong>
                 <ul>
                     @if (Model.AtrybutyByGroup.ContainsKey(@group.Id) && Model.AtrybutyByGroup[@group.Id] != null && Model.AtrybutyByGroup[@group.Id].Any())
                     {
                         @foreach (var attr in Model.AtrybutyByGroup[@group.Id])
                         {
-                            <li>@attr.Name @* (@attr.Id) *@</li>
+                            <li>@attr.Name</li>
                         }
                     }
                     else
@@ -36,7 +86,7 @@
             </li>
         }
     </ul>
-}
+} *@
 
 @if (Model.ErrorMessage != null)
 {

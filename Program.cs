@@ -6,6 +6,7 @@ using System;
 using System.Configuration;
 using System.Threading.Tasks;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Sellasist_OptimaContextConnection") ?? throw new InvalidOperationException("Connection string 'Sellasist_OptimaContextConnection' not found.");
@@ -19,6 +20,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddDbContext<ConfigurationContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient("SellAsistApiClient");
+//
+/*builder.Services.AddHttpClient("WebApiClient")*/;
+
 
 //builder.Services.AddScoped<SellAsistContext>();
 builder.Services.AddScoped<ConfigurationContext>();

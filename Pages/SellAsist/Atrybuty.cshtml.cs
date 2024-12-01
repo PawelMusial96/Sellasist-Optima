@@ -85,7 +85,7 @@ namespace Sellasist_Optima.Pages.SellAsist
             var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync();
             if (apiInfo == null)
             {
-                ErrorMessage = "API configuration not found.";
+                ErrorMessage = "Konfiguracja API nie znaleziona.";
                 return;
             }
 
@@ -93,27 +93,71 @@ namespace Sellasist_Optima.Pages.SellAsist
             client.BaseAddress = new Uri(apiInfo.ShopName);
             client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
 
-            HttpResponseMessage responseatrybutygrupa = await client.GetAsync("/api/v1/attributes_groups");
-            if (responseatrybutygrupa.IsSuccessStatusCode)
+            HttpResponseMessage responseGroupList = await client.GetAsync("/api/v1/attributes_groups");
+            if (responseGroupList.IsSuccessStatusCode)
             {
-                var jsonResponse = await responseatrybutygrupa.Content.ReadAsStringAsync();
-                AtrybutyGrupa = JsonConvert.DeserializeObject<List<AtrybutyGrupa>>(jsonResponse);
+                var jsonResponse = await responseGroupList.Content.ReadAsStringAsync();
+                var groupList = JsonConvert.DeserializeObject<List<AtrybutyGrupa>>(jsonResponse);
 
-                foreach (var group in AtrybutyGrupa)
+                AtrybutyGrupa = new List<AtrybutyGrupa>();
+
+                foreach (var group in groupList)
                 {
-                    var responseAttributes = await client.GetAsync($"/api/v1/attributes_groups/{group.Id}");
-                    if (responseAttributes.IsSuccessStatusCode)
+                    var responseGroup = await client.GetAsync($"/api/v1/attributes_groups/{group.Id}");
+                    if (responseGroup.IsSuccessStatusCode)
                     {
-                        var jsonAttributesResponse = await responseAttributes.Content.ReadAsStringAsync();
-                        var attributesGroup = JsonConvert.DeserializeObject<AtrybutyGrupa>(jsonAttributesResponse);
-                        AtrybutyByGroup[group.Id] = attributesGroup.Attributes;
+                        var jsonGroupResponse = await responseGroup.Content.ReadAsStringAsync();
+                        var groupWithAttributes = JsonConvert.DeserializeObject<AtrybutyGrupa>(jsonGroupResponse);
+                        AtrybutyGrupa.Add(groupWithAttributes);
                     }
                     else
                     {
-                        AtrybutyByGroup[group.Id] = new List<AtrybutyGrupy>();
+                        group.Attributes = new List<AtrybutyGrupy>();
+                        AtrybutyGrupa.Add(group);
                     }
                 }
             }
+            else
+            {
+                ErrorMessage = $"B³¹d pobierania grup atrybutów: {responseGroupList.ReasonPhrase}";
+            }
         }
+
+
+        //private async Task LoadAttributesAsync()
+        //{
+        //    var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync();
+        //    if (apiInfo == null)
+        //    {
+        //        ErrorMessage = "Konfiguracja API nie znaleziona.";
+        //        return;
+        //    }
+
+        //    HttpClient client = _httpClientFactory.CreateClient();
+        //    client.BaseAddress = new Uri(apiInfo.ShopName);
+        //    client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
+
+        //    HttpResponseMessage responseatrybutygrupa = await client.GetAsync("/api/v1/attributes_groups");
+        //    if (responseatrybutygrupa.IsSuccessStatusCode)
+        //    {
+        //        var jsonResponse = await responseatrybutygrupa.Content.ReadAsStringAsync();
+        //        AtrybutyGrupa = JsonConvert.DeserializeObject<List<AtrybutyGrupa>>(jsonResponse);
+
+        //        foreach (var group in AtrybutyGrupa)
+        //        {
+        //            var responseAttributes = await client.GetAsync($"/api/v1/attributes_groups/{group.Id}");
+        //            if (responseAttributes.IsSuccessStatusCode)
+        //            {
+        //                var jsonAttributesResponse = await responseAttributes.Content.ReadAsStringAsync();
+        //                var attributesGroup = JsonConvert.DeserializeObject<AtrybutyGrupa>(jsonAttributesResponse);
+        //                AtrybutyByGroup[group.Id] = attributesGroup.Attributes;
+        //            }
+        //            else
+        //            {
+        //                AtrybutyByGroup[group.Id] = new List<AtrybutyGrupy>();
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

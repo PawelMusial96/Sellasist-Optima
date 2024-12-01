@@ -1,6 +1,6 @@
 ﻿namespace Sellasist_Optima.WebApiModels
 {
-    public class DocumentAttributesModels
+    public class DocumentAttributes
     {
         public int Id { get; set; }
         public string Code { get; set; }

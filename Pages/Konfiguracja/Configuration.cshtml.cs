@@ -45,69 +45,87 @@ namespace Sellasist_Optima.Pages.Konfiguracja
         {
             try
             {
-                bool exists = await _context.WebApiClient.AnyAsync(w =>
-                    w.Username == WebApiClient.Username &&
-                    w.Password == WebApiClient.Password &&
-                    w.Grant_type == WebApiClient.Grant_type &&
-                    w.TokenAPI == WebApiClient.TokenAPI);
+                // Pobieramy istniej¹cy rekord z tabeli WebApiClient - zak³adamy ¿e jest tylko jeden
+                var existingWebApiClient = await _context.WebApiClient.FirstOrDefaultAsync();
 
-                if (!exists)
+                if (existingWebApiClient == null)
                 {
+                    // Je¿eli brak jakiegokolwiek rekordu, tworzymy nowy
                     _context.WebApiClient.Add(WebApiClient);
                     int saved = await _context.SaveChangesAsync();
-                    Message = saved > 0 ? "Web API connection saved successfully." : "Failed to save Web API connection.";
+                    Message = saved > 0
+                        ? "Nowa konfiguracja Web API zosta³a zapisana."
+                        : "Nie uda³o siê zapisaæ konfiguracji Web API.";
                 }
                 else
                 {
-                    Message = "This Web API client already exists.";
+                    // Rekord istnieje, aktualizujemy go nowymi danymi
+                    existingWebApiClient.Username = WebApiClient.Username;
+                    existingWebApiClient.Password = WebApiClient.Password;
+                    existingWebApiClient.Grant_type = WebApiClient.Grant_type;
+                    existingWebApiClient.Localhost = WebApiClient.Localhost;
+                    existingWebApiClient.TokenAPI = WebApiClient.TokenAPI;
+
+                    int saved = await _context.SaveChangesAsync();
+                    Message = saved > 0
+                        ? "Konfiguracja Web API zosta³a zaktualizowana."
+                        : "Nie uda³o siê zaktualizowaæ konfiguracji Web API.";
                 }
             }
             catch (Exception ex)
             {
-                Message = $"Error saving Web API client: {ex.Message}";
+                Message = $"B³¹d podczas zapisywania konfiguracji Web API: {ex.Message}";
             }
 
-            AllSellAsistAPI = await _context.SellAsistAPI.ToListAsync();
             AllWebApiClient = await _context.WebApiClient.ToListAsync();
             return Page();
         }
 
-        //public async Task<IActionResult> OnGetEditAsync(int id)
-        //{
-        //    SellAsistAPI = await _context.SellAsistAPI.FindAsync(id);
-        //    if (SellAsistAPI == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    //await LoadDataAsync();
-        //    return Page();
-        //}
-
         public async Task<IActionResult> OnPostConnectAPIAsync()
         {
             var client = _clientFactory.CreateClient("SellAsistApiClient");
-            client.BaseAddress = new Uri(SellAsistAPI.ShopName);
+
+            try
+            {
+                client.BaseAddress = new Uri(SellAsistAPI.ShopName);
+            }
+            catch (UriFormatException)
+            {
+                ModelState.AddModelError(string.Empty, "Nieprawid³owy adres sklepu");
+                AllSellAsistAPI = await _context.SellAsistAPI.ToListAsync();
+                return Page();
+            }
+
             client.DefaultRequestHeaders.Add("apiKey", SellAsistAPI.KeyAPI);
 
             HttpResponseMessage response = await client.GetAsync("endpoint");
-            bool exists = await _context.SellAsistAPI.AnyAsync(api => api.ShopName == SellAsistAPI.ShopName && api.KeyAPI == SellAsistAPI.KeyAPI);
 
-            if (!exists)
+            var existingSellAsistAPI = await _context.SellAsistAPI.FirstOrDefaultAsync();
+
+            if (existingSellAsistAPI == null)
             {
+                // Brak wpisu w bazie, tworzymy nowy
                 _context.SellAsistAPI.Add(SellAsistAPI);
                 int saved = await _context.SaveChangesAsync();
-                Message = saved > 0 ? "Sellasist API connection saved successfully" : "Sellasist API connection failed to save";
+                Message = saved > 0
+                    ? "Nowa konfiguracja Sellasist API zosta³a zapisana."
+                    : "Nie uda³o siê zapisaæ konfiguracji Sellasist API.";
             }
             else
             {
-                Message = "This Sellasist API already exists.";
+                // Istnieje ju¿ jeden rekord, aktualizujemy go nowymi danymi
+                existingSellAsistAPI.ShopName = SellAsistAPI.ShopName;
+                existingSellAsistAPI.KeyAPI = SellAsistAPI.KeyAPI;
+
+                int saved = await _context.SaveChangesAsync();
+                Message = saved > 0
+                    ? "Konfiguracja Sellasist API zosta³a zaktualizowana."
+                    : "Nie uda³o siê zaktualizowaæ konfiguracji Sellasist API.";
             }
 
             AllSellAsistAPI = await _context.SellAsistAPI.ToListAsync();
 
-
             return Page();
-        }
+        }    
     }
 }

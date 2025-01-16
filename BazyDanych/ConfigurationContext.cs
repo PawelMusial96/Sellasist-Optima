@@ -62,6 +62,14 @@ namespace Sellasist_Optima.BazyDanych
               .IsRequired()
               .HasMaxLength(400);
 
+            builder.Entity<WebApiClient>()
+              .Property(a => a.CompanyName)
+              .HasMaxLength(255);
+
+            builder.Entity<WebApiClient>()
+              .Property(a => a.DatabaseName)
+              .HasMaxLength(255);
+
 
         }
 

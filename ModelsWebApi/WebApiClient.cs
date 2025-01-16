@@ -28,5 +28,11 @@ namespace Sellasist_Optima.WebApiModels
         [Required]
         [MaxLength(400)]
         public string TokenAPI { get; set; }
+
+        [MaxLength(255)]
+        public string CompanyName { get; set; }
+
+        [MaxLength(255)]
+        public string DatabaseName { get; set; }
     }
 }

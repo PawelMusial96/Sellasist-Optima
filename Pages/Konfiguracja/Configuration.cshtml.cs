@@ -65,6 +65,8 @@ namespace Sellasist_Optima.Pages.Konfiguracja
                     existingWebApiClient.Grant_type = WebApiClient.Grant_type;
                     existingWebApiClient.Localhost = WebApiClient.Localhost;
                     existingWebApiClient.TokenAPI = WebApiClient.TokenAPI;
+                    existingWebApiClient.CompanyName = WebApiClient.CompanyName;
+                    existingWebApiClient.DatabaseName = WebApiClient.DatabaseName;
 
                     int saved = await _context.SaveChangesAsync();
                     Message = saved > 0

@@ -1,0 +1,385 @@
+﻿@page
+@model Sellasist_Optima.Pages.ZTest.TestZamówieńSellAsistModel
+@{
+}
+<h2>Orders by Status</h2>
+
+<!-- Select Status Form -->
+<form method="post" asp-page-handler="FetchOrders">
+    <div>
+        <label for="SelectedStatusId">Select Status:</label>
+        <select asp-for="SelectedStatusId" asp-items="Model.StatusList"></select>
+    </div>
+    <button type="submit">Show Orders</button>
+</form>
+
+<hr />
+
+@if (Model.Orders != null && Model.Orders.Any())
+{
+    <h3>Orders for Status: @Model.SelectedStatusName</h3>
+
+    <table border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Source</th>
+                <th>Shop</th>
+                <th>Deadline</th>
+                <th>Important</th>
+                <th>Placeholder</th>
+                <th>TrackingNumber</th>
+                <th>DocumentNumber</th>
+                <th>Invoice</th>
+                <th>Email</th>
+                <th>Total</th>
+                <th>Comment</th>
+
+                <!-- Billing Address -->
+                <th>Billing Address</th>
+
+                <!-- Shipping Address -->
+                <th>Shipping Address</th>
+
+                <!-- PickupPoint -->
+                <th>Pickup Point</th>
+
+                <!-- Payment (basic) -->
+                <th>Payment</th>
+
+                <!-- Shipment (basic) -->
+                <th>Shipment</th>
+
+                <!-- External Data -->
+                <th>External Data</th>
+
+                <!-- Carts (detailed) -->
+                <th>Carts</th>
+
+                <!-- Payments (detailed) -->
+                <th>Payments</th>
+
+                <!-- Shipments (detailed) -->
+                <th>Shipments</th>
+
+                <!-- Additional Fields -->
+                <th>Additional Fields</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <!-- Simple properties -->
+                    <td>@(order.Id ?? "null")</td>
+                    <td>
+                        @(order.Date == default(DateTime)
+                            ? "null"
+                            : order.Date.ToString("yyyy-MM-dd HH:mm"))
+                    </td>
+                    <td>@(order.Status?.Name ?? "null")</td>
+                    <td>@(order.Source ?? "null")</td>
+                    <td>@(order.Shop ?? "null")</td>
+                    <td>
+                        @(order.Deadline == default(DateTime)
+                            ? "null"
+                            : order.Deadline.ToString("yyyy-MM-dd HH:mm"))
+                    </td>
+                    <td>@order.Important</td>
+                    <td>@order.Placeholder</td>
+                    <td>@(order.TrackingNumber ?? "null")</td>
+                    <td>@(order.DocumentNumber ?? "null")</td>
+                    <td>@order.Invoice</td>
+                    <td>@(order.Email ?? "null")</td>
+                    <td>@(order.Total == default(decimal) ? "null" : order.Total.ToString("F2"))</td>
+                    <td>@(order.Comment ?? "null")</td>
+
+                    <!-- Billing Address -->
+                    <td>
+                        @if (order.BillAddress == null)
+                        {
+                            <text>null</text>
+                        }
+                        else
+                        {
+                            <text>
+                                Name: @(order.BillAddress.Name ?? "null")<br />
+                                Surname: @(order.BillAddress.Surname ?? "null")<br />
+                                Street: @(order.BillAddress.Street ?? "null")
+                                @(order.BillAddress.HomeNumber ?? "null")<br />
+                                Flat: @(order.BillAddress.FlatNumber ?? "null")<br />
+                                Postcode: @(order.BillAddress.Postcode ?? "null")<br />
+                                City: @(order.BillAddress.City ?? "null")<br />
+                                State: @(order.BillAddress.State ?? "null")<br />
+                                Phone: @(order.BillAddress.Phone ?? "null")<br />
+                                Company: @(order.BillAddress.CompanyName ?? "null")<br />
+                                NIP: @(order.BillAddress.CompanyNip ?? "null")<br />
+                                Country: @(order.BillAddress.Country?.Name ?? "null")
+                                (@(order.BillAddress.Country?.Code ?? "null"))
+                            </text>
+                        }
+                    </td>
+
+                    <!-- Shipment Address -->
+                    <td>
+                        @if (order.ShipmentAddress == null)
+                        {
+                            <text>null</text>
+                        }
+                        else
+                        {
+                            <text>
+                                Name: @(order.ShipmentAddress.Name ?? "null")<br />
+                                Surname: @(order.ShipmentAddress.Surname ?? "null")<br />
+                                Street: @(order.ShipmentAddress.Street ?? "null")
+                                @(order.ShipmentAddress.HomeNumber ?? "null")<br />
+                                Flat: @(order.ShipmentAddress.FlatNumber ?? "null")<br />
+                                Postcode: @(order.ShipmentAddress.Postcode ?? "null")<br />
+                                City: @(order.ShipmentAddress.City ?? "null")<br />
+                                State: @(order.ShipmentAddress.State ?? "null")<br />
+                                Phone: @(order.ShipmentAddress.Phone ?? "null")<br />
+                                Company: @(order.ShipmentAddress.CompanyName ?? "null")<br />
+                                NIP: @(order.ShipmentAddress.CompanyNip ?? "null")<br />
+                                Country: @(order.ShipmentAddress.Country?.Name ?? "null")
+                                (@(order.ShipmentAddress.Country?.Code ?? "null"))
+                            </text>
+                        }
+                    </td>
+
+                    <!-- Pickup Point -->
+                    <td>
+                        @if (order.PickupPoint == null)
+                        {
+                            <text>null</text>
+                        }
+                        else
+                        {
+                            <text>
+                                Code: @(order.PickupPoint.Code ?? "null")<br />
+                                Type: @(order.PickupPoint.Type ?? "null")<br />
+                                Address: @(order.PickupPoint.Address ?? "null")
+                            </text>
+                        }
+                    </td>
+
+                    <!-- Payment (basic) -->
+                    <td>
+                        @if (order.Payment == null)
+                        {
+                            <text>null</text>
+                        }
+                        else
+                        {
+                            <text>
+                                Id: @(order.Payment.Id.ToString())<br />
+                                Name: @(order.Payment.Name ?? "null")<br />
+                                Paid: @(order.Payment.Paid?.ToString("F2") ?? "null")<br />
+                                PaidDate:
+                                @(order.Payment.PaidDate.HasValue
+                                    ? order.Payment.PaidDate.Value.ToString("yyyy-MM-dd HH:mm")
+                                    : "null")<br />
+                                COD: @order.Payment.Cod <br />
+                                Status: @(order.Payment.Status ?? "null")<br />
+                                Currency: @(order.Payment.Currency ?? "null")<br />
+                                Tax: @order.Payment.Tax
+                            </text>
+                        }
+                    </td>
+
+                    <!-- Shipment (basic) -->
+                    <td>
+                        @if (order.Shipment == null)
+                        {
+                            <text>null</text>
+                        }
+                        else
+                        {
+                            <text>
+                                Id: @(order.Shipment.Id.ToString())<br />
+                                Name: @(order.Shipment.Name ?? "null")<br />
+                                Total: @(order.Shipment.Total ?? "null")
+                            </text>
+                        }
+                    </td>
+
+                    <!-- External Data -->
+                    <td>
+                        @if (order.ExternalData == null)
+                        {
+                            <text>null</text>
+                        }
+                        else
+                        {
+                            <text>
+                                ExternalId: @(order.ExternalData.ExternalId ?? "null")<br />
+                                ExternalLogin: @(order.ExternalData.ExternalLogin ?? "null")<br />
+                                ExternalUserId: @order.ExternalData.ExternalUserId <br />
+                                ExternalAccount: @order.ExternalData.ExternalAccount <br />
+                                ExternalSite: @(order.ExternalData.ExternalSite ?? "null")<br />
+                                ExternalPaymentName: @(order.ExternalData.ExternalPaymentName ?? "null")<br />
+                                ExternalShipmentName: @(order.ExternalData.ExternalShipmentName ?? "null")<br />
+                                ExternalType: @(order.ExternalData.ExternalType ?? "null")
+                            </text>
+                        }
+                    </td>
+
+                    <!-- Carts (list of CartItem) -->
+                    <td>
+                        @if (order.Carts != null && order.Carts.Any())
+                        {
+                            <table style="width:100%; border:1px solid black; border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background-color:#eee;">
+                                        <th>Id</th>
+                                        <th>ProductId</th>
+                                        <th>Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>EAN</th>
+                                        <th>Symbol</th>
+                                        <th>CatalogNumber</th>
+                                        <th>Etc.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cartItem in order.Carts)
+                                    {
+                                        <tr>
+                                            <td>@cartItem.Id</td>
+                                            <td>@(cartItem.ProductId?.ToString() ?? "null")</td>
+                                            <td>@(cartItem.Name ?? "null")</td>
+                                            <td>@cartItem.Quantity</td>
+                                            <td>@cartItem.Price</td>
+                                            <td>@(cartItem.Ean ?? "null")</td>
+                                            <td>@(cartItem.Symbol ?? "null")</td>
+                                            <td>@(cartItem.CatalogNumber ?? "null")</td>
+                                            <td>
+                                                @* Display other cart fields (VariantId, Image, etc.) similarly *@
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <text>null</text>
+                        }
+                    </td>
+
+                    <!-- Payments (list of PaymentDetail) -->
+                    <td>
+                        @if (order.Payments != null && order.Payments.Any())
+                        {
+                            <table style="width:100%; border:1px solid black; border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background-color:#eee;">
+                                        <th>PaymentId</th>
+                                        <th>Date</th>
+                                        <th>PaymentData</th>
+                                        <th>Amount</th>
+                                        <th>Currency</th>
+                                        <th>Status</th>
+                                        <th>Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pDetail in order.Payments)
+                                    {
+                                        <tr>
+                                            <td>@pDetail.PaymentId</td>
+                                            <td>
+                                                @(pDetail.Date == default(DateTime)
+                                                    ? "null"
+                                                    : pDetail.Date.ToString("yyyy-MM-dd HH:mm"))
+                                            </td>
+                                            <td>@(pDetail.PaymentData ?? "null")</td>
+                                            <td>@pDetail.Amount</td>
+                                            <td>@(pDetail.Currency ?? "null")</td>
+                                            <td>@pDetail.Status</td>
+                                            <td>@(pDetail.Name ?? "null")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <text>null</text>
+                        }
+                    </td>
+
+                    <!-- Shipments (list of ShipmentDetail) -->
+                    <td>
+                        @if (order.Shipments != null && order.Shipments.Any())
+                        {
+                            <table style="width:100%; border:1px solid black; border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background-color:#eee;">
+                                        <th>OrderShipmentId</th>
+                                        <th>Service</th>
+                                        <th>TrackingNumber</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var sDetail in order.Shipments)
+                                    {
+                                        <tr>
+                                            <td>@sDetail.OrderShipmentId</td>
+                                            <td>@(sDetail.Service ?? "null")</td>
+                                            <td>@(sDetail.TrackingNumber ?? "null")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <text>null</text>
+                        }
+                    </td>
+
+                    <!-- Additional Fields (list of AdditionalField) -->
+                    <td>
+                        @if (order.AdditionalFields != null && order.AdditionalFields.Any())
+                        {
+                            <table style="width:100%; border:1px solid black; border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background-color:#eee;">
+                                        <th>FieldId</th>
+                                        <th>FieldName</th>
+                                        <th>FieldValue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var af in order.AdditionalFields)
+                                    {
+                                        <tr>
+                                            <td>@af.FieldId</td>
+                                            <td>@(af.FieldName ?? "null")</td>
+                                            <td>@(af.FieldValue ?? "null")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <text>null</text>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (Model.Orders != null && !Model.Orders.Any())
+{
+    <p>No orders found for the selected status.</p>
+}
+else
+{
+    <p>Orders list is null.</p>
+}

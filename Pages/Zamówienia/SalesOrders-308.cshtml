@@ -1,0 +1,33 @@
+﻿@page
+@model Sellasist_Optima.Pages.Zamówienia.SalesOrdersModel
+<h2>Tworzenie RO</h2>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Tworzenie dokumentu Rezerwacji Odbiorcy</title>
+</head>
+<body>
+    <h2>Pobierz zamówienia z Sellasist według statusu</h2>
+
+
+    <!-- pobiera  zamówienia i tworzy 308 -->
+    <form method="post" asp-page-handler="DownloadAndCreateDocs">
+        <div>
+            <label for="SelectedStatusId">Wybierz status:</label>
+            <select asp-for="SelectedStatusId" asp-items="Model.StatusList"></select>
+        </div>
+        <button type="submit" style="color: white; background-color: green;">
+            Pobierz wszystkie zamówienia i utwórz 308
+        </button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.ResultMessage))
+    {
+        <p style="color:blue">
+            <strong>Info:</strong> @Model.ResultMessage
+        </p>
+    }
+</body>
+</html>

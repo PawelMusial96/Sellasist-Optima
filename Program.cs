@@ -27,6 +27,17 @@ builder.Services.AddHttpClient("SellAsistApiClient");
 //builder.Services.AddScoped<SellAsistContext>();
 builder.Services.AddScoped<ConfigurationContext>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policyBuilder =>
+    {
+        policyBuilder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -39,6 +50,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors("AllowAll");
+
 app.UseAuthorization();
 
 app.MapRazorPages();

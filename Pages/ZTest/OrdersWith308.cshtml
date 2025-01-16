@@ -1,0 +1,97 @@
+﻿@page
+@model Sellasist_Optima.Pages.ZTest.OrdersWith308Model
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Zamówienia i tworzenie dokumentu 308</title>
+</head>
+<body>
+    <h2>Pobierz zamówienia z Sellasist według statusu</h2>
+
+    <!-- Formularz do wyboru statusu -->
+    <form method="post" asp-page-handler="FetchOrders">
+        <div>
+            <label for="SelectedStatusId">Wybierz status:</label>
+            <select asp-for="SelectedStatusId" asp-items="Model.StatusList"></select>
+        </div>
+        <button type="submit">Pokaż zamówienia</button>
+    </form>
+
+    <hr />
+
+    @if (Model.Orders != null && Model.Orders.Any())
+    {
+        <h3>Zamówienia dla statusu: @Model.SelectedStatusName</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Id zamówienia</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Płatność</th>
+                    <th>Razem</th>
+                    <th>Adres rozliczeniowy</th>
+                    <th>Adres dostawy</th>
+                    <th>Pozycje</th>
+                    <th>Utwórz 308</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>@order.Id</td>
+                        <td>@order.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@order.Status?.Name</td>
+                        <td>
+                            @order.Payment?.Name <br />
+                            Status: @order.Payment?.Status <br />
+                            Opłacono: @order.Payment?.Paid
+                        </td>
+                        <td>@order.Total</td>
+                        <td>
+                            @order.BillAddress?.Name @order.BillAddress?.Surname <br />
+                            @order.BillAddress?.Street @order.BillAddress?.HomeNumber
+                        </td>
+                        <td>
+                            @order.ShipmentAddress?.Name @order.ShipmentAddress?.Surname <br />
+                            @order.ShipmentAddress?.Street @order.ShipmentAddress?.HomeNumber
+                        </td>
+                        <td>
+                            @if (order.Carts != null)
+                            {
+                                <ul>
+                                    @foreach (var cartItem in order.Carts)
+                                    {
+                                        <li>@cartItem.Name (Ilość: @cartItem.Quantity, Cena: @cartItem.Price)</li>
+                                    }
+                                </ul>
+                            }
+                        </td>
+                        <td>
+                            <!-- Przycisk wywołujący OnPostCreateDoc dla bieżącego zamówienia -->
+                            <form method="post" asp-page-handler="CreateDoc">
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <button type="submit">Utwórz 308</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else if (Model.Orders != null && !Model.Orders.Any())
+    {
+        <p>Brak zamówień dla wybranego statusu.</p>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ResultMessage))
+    {
+        <p style="color:blue">
+            <strong>Info:</strong> @Model.ResultMessage
+        </p>
+    }
+</body>
+</html>

@@ -11,6 +11,9 @@
     <div>
         <label>Name Shop:</label>
         <input type="text" asp-for="SellAsistAPI.ShopName" required />
+        <br />
+        <small>(Np: https://wszystkoinic.sellasist.pl)</small>
+        <br />
     </div>
     <div>
         <label>API Key:</label>
@@ -65,6 +68,14 @@
         <label>TokenAPI:</label>
         <input type="password" asp-for="WebApiClient.TokenAPI" required />
     </div>
+    <div>
+        <label>Company Name (Optima):</label>
+        <input type="text" asp-for="WebApiClient.CompanyName" />
+    </div>
+    <div>
+        <label>Database Name (Optima):</label>
+        <input type="text" asp-for="WebApiClient.DatabaseName" />
+    </div>
 
     <input type="submit" value="Connect WebApi" asp-page-handler="ConnectWebAPI" />
 </form>
@@ -93,6 +104,8 @@
             <td>@item.Grant_type</td>
             <td>@item.Localhost</td>
             <td>@item.TokenAPI</td>
+            <td>@item.CompanyName</td>
+            <td>@item.DatabaseName</td>
         </tr>
     }   
 </table>

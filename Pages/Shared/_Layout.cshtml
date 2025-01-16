@@ -34,24 +34,24 @@
                                 <a class="nav-link text-dark" asp-area="" asp-page="/Konfiguracja/Configuration">Konfiguracja</a>
                             </li>
                         }
-                        @if (User.IsInRole("Customer"))
+                       @*  @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/Status">Statusy</a>
                             </li>
-                        }
-                        @if (User.IsInRole("Customer"))
+                        } *@
+                        @* @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/SellAsist/Atrybuty">Atrybuty</a>
                             </li>
-                        }
-                        @if (User.IsInRole("Customer"))
+                        } *@
+                       @*  @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/WebAPI/DocumentAttributes">Atrybuty Dokumentu</a>
                             </li>
-                        }
+                        } *@
                         @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
@@ -67,10 +67,34 @@
                         @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Zamówienia/SalesOrders">Tworzenie RO</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Zamówienia/SalesOrders-308">Tworzenie RO</a>
                             </li>
                         }
-
+                       @*  @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/ZTest/Testcshtml">Testcshtml</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/ZTest/TestZamówieńSellAsist">TestZamówieńSellAsist</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/ZTest/OrdersWith308">OrdersWith308</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/ZTest/Ordertest308">Ordertest308</a>
+                            </li>
+                        } *@
+                       
                         
                         
                     </ul>

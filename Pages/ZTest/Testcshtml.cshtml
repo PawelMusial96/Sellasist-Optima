@@ -1,0 +1,30 @@
+﻿@page
+@model Sellasist_Optima.Pages.ZTest.TestcshtmlModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Utwórz dokument - Zamówienie Sprzedaży (308)</title>
+</head>
+<body>
+    <h1>Utwórz dokument</h1>
+
+    <form method="post">
+        <!--
+            Po kliknięciu przycisku wywołamy OnPostCreateDocAsync
+            dzięki atrybutowi asp-page-handler="CreateDoc"
+            lub name="handler" value="CreateDoc"
+        -->
+        <button type="submit" asp-page-handler="CreateDoc">
+            Utwórz dokument
+        </button>
+    </form>
+
+    <!-- Możesz dodać np. wyświetlanie komunikatu, czy się udało -->
+    @if (!string.IsNullOrEmpty(Model.ResultMessage))
+    {
+        <p><strong>Wynik:</strong> @Model.ResultMessage</p>
+    }
+</body>
+</html>

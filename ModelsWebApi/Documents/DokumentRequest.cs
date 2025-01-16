@@ -42,7 +42,7 @@
         public List<Element> Elements { get; set; } // Elementy dokumentu (towary, usługi, etc.)
         public List<Attribute> Attributes { get; set; } // Atrybuty dokumentu
         public List<string> Jpkv7Codes { get; set; } // Kody JPKV7 dla dokumentu
-        public CompanyData CompanyData { get; set; } // Dane firmy (dla dokumentu)
+        //public CompanyData CompanyData { get; set; } // Dane firmy (dla dokumentu)
 
         // Konstruktor
         public DokumentRequest()
@@ -105,10 +105,10 @@
     }
 
     // Reprezentacja danych firmy
-    public class CompanyData
-    {
-        public string CompanyName { get; set; } // Nazwa firmy
-        public string DatabaseName { get; set; } // Nazwa bazy danych
-    }
+    //public class CompanyData
+    //{
+    //    public string CompanyName { get; set; } // Nazwa firmy
+    //    public string DatabaseName { get; set; } // Nazwa bazy danych
+    //}
 }
 

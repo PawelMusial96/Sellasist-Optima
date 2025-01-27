@@ -32,6 +32,9 @@ namespace Sellasist_Optima.Pages.Zamówienia
     [BindProperty]
     public int SelectedStatusId { get; set; }
 
+    [BindProperty]
+    public int SelectedNewStatusId { get; set; }
+
     // Do wyświetlenia nazwy wybranego statusu
     public string SelectedStatusName { get; set; }
 
@@ -77,102 +80,175 @@ namespace Sellasist_Optima.Pages.Zamówienia
         return Page();
     }
 
-    // -------------------------------------
-    // Handler: pobierz i UTWÓRZ dokumenty 308
-    // -------------------------------------
-    /// <summary>
-    /// 1) Pobiera wszystkie zamówienia z wybranego statusu
-    /// 2) Dla każdego zamówienia tworzy dokument 308
-    /// 3) Nie wyświetla danych o zamówieniach
-    /// </summary>
-    public async Task<IActionResult> OnPostDownloadAndCreateDocs()
-    {
-        // Załaduj statusy i listę do dropdown
-        await LoadStatusesAsync();
-        BuildStatusSelectList();
+        // -------------------------------------
+        // Handler: pobierz i UTWÓRZ dokumenty 308
+        // -------------------------------------
+        /// <summary>
+        /// 1) Pobiera wszystkie zamówienia z wybranego statusu
+        /// 2) Dla każdego zamówienia tworzy dokument 308
+        /// 3) Nie wyświetla danych o zamówieniach
+        /// </summary>
+        //public async Task<IActionResult> OnPostDownloadAndCreateDocs()
+        //{
+        //    // Załaduj statusy i listę do dropdown
+        //    await LoadStatusesAsync();
+        //    BuildStatusSelectList();
 
-        // Pobierz zamówienia w danym statusie
-        await LoadOrdersByStatusAsync(SelectedStatusId);
+        //    // Pobierz zamówienia w danym statusie
+        //    await LoadOrdersByStatusAsync(SelectedStatusId);
 
-        // Jeśli brak zamówień -> koniec
-        if (Orders == null || !Orders.Any())
+        //    // Jeśli brak zamówień -> koniec
+        //    if (Orders == null || !Orders.Any())
+        //    {
+        //        ResultMessage = "Brak zamówień do przetworzenia w tym statusie.";
+        //        return Page();
+        //    }
+
+        //    // === Wczytanie konfiguracji z bazy (z Configuration.cshtml) ===
+        //    var webApiConfig = await _context.WebApiClient.FirstOrDefaultAsync();
+        //    if (webApiConfig == null)
+        //    {
+        //        ResultMessage = "Brak konfiguracji WebApiClient. Uzupełnij w sekcji Konfiguracja.";
+        //        return Page();
+        //    }
+
+        //    // Tutaj pobieramy parametry z WebApiClient:
+        //    //   Localhost, CompanyName, TokenAPI, DatabaseName, itp.
+        //    // Dla przykładu przyjmujemy, że "Localhost" to nasz BaseAddress,
+        //    // "CompanyName" to np. FIRMA_DEMO (zmienna),
+        //    // "TokenAPI" to Bearer token.
+        //    // Oczywiście możesz zmienić w zależności od konwencji w swojej bazie.
+        //    string baseUrl = webApiConfig.Localhost;      // e.g. "http://localhost:6462"
+        //    string token = webApiConfig.TokenAPI;         // e.g. "some-long-bearer-token"
+        //    string companyName = webApiConfig.CompanyName; // e.g. "FIRMA_DEMO"
+
+        //    // (Opcjonalnie dopisz http:// jeśli user wpisał samo "localhost:6462")
+        //    if (!baseUrl.StartsWith("http://") && !baseUrl.StartsWith("https://"))
+        //    {
+        //        baseUrl = "http://" + baseUrl;
+        //    }
+
+        //    int createdCount = 0;
+
+        //    try
+        //    {
+        //        using (var client = _clientFactory.CreateClient())
+        //        {
+        //            // Ustaw BaseAddress + Bearer
+        //            client.BaseAddress = new Uri(baseUrl);
+        //            client.DefaultRequestHeaders.Authorization =
+        //                new AuthenticationHeaderValue("Bearer", token);
+
+        //            // Logowanie do Comarch
+        //            // Zamiast "...?companyName=FIRMA_DEMO", używamy wczytanej wartości "companyName"
+        //            var loginUrl = $"/api/LoginOptima?companyName={companyName}";
+        //            var loginResp = await client.PostAsync(loginUrl, null);
+        //            if (!loginResp.IsSuccessStatusCode)
+        //            {
+        //                ResultMessage = $"Błąd logowania do Optima. Kod: {loginResp.StatusCode}";
+        //                return Page();
+        //            }
+
+        //            // Dla każdego zamówienia twórz 308
+        //            foreach (var order in Orders)
+        //            {
+        //                bool success = await CreateDocForOrder(client, order);
+        //                if (success) createdCount++;
+        //            }
+
+        //            // Wylogowanie
+        //            await LogoutOptima(client);
+        //        }
+
+        //        ResultMessage = $"Utworzono dokument 308 dla {createdCount} zamówień (status={SelectedStatusId}).";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ResultMessage = $"Wyjątek podczas przetwarzania zamówień: {ex.Message}";
+        //    }
+
+        //    // Strona nie wyświetla listy
+        //    Orders = null;
+        //    return Page();
+        //}
+
+        public async Task<IActionResult> OnPostDownloadAndCreateDocs()
         {
-            ResultMessage = "Brak zamówień do przetworzenia w tym statusie.";
-            return Page();
-        }
+            await LoadStatusesAsync();
+            BuildStatusSelectList();
 
-        // === Wczytanie konfiguracji z bazy (z Configuration.cshtml) ===
-        var webApiConfig = await _context.WebApiClient.FirstOrDefaultAsync();
-        if (webApiConfig == null)
-        {
-            ResultMessage = "Brak konfiguracji WebApiClient. Uzupełnij w sekcji Konfiguracja.";
-            return Page();
-        }
+            // Pobierz zamówienia w wybranym statusie (SelectedStatusId)
+            await LoadOrdersByStatusAsync(SelectedStatusId);
 
-        // Tutaj pobieramy parametry z WebApiClient:
-        //   Localhost, CompanyName, TokenAPI, DatabaseName, itp.
-        // Dla przykładu przyjmujemy, że "Localhost" to nasz BaseAddress,
-        // "CompanyName" to np. FIRMA_DEMO (zmienna),
-        // "TokenAPI" to Bearer token.
-        // Oczywiście możesz zmienić w zależności od konwencji w swojej bazie.
-        string baseUrl = webApiConfig.Localhost;      // e.g. "http://localhost:6462"
-        string token = webApiConfig.TokenAPI;         // e.g. "some-long-bearer-token"
-        string companyName = webApiConfig.CompanyName; // e.g. "FIRMA_DEMO"
-
-        // (Opcjonalnie dopisz http:// jeśli user wpisał samo "localhost:6462")
-        if (!baseUrl.StartsWith("http://") && !baseUrl.StartsWith("https://"))
-        {
-            baseUrl = "http://" + baseUrl;
-        }
-
-        int createdCount = 0;
-
-        try
-        {
-            using (var client = _clientFactory.CreateClient())
+            if (Orders == null || !Orders.Any())
             {
-                // Ustaw BaseAddress + Bearer
-                client.BaseAddress = new Uri(baseUrl);
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
-
-                // Logowanie do Comarch
-                // Zamiast "...?companyName=FIRMA_DEMO", używamy wczytanej wartości "companyName"
-                var loginUrl = $"/api/LoginOptima?companyName={companyName}";
-                var loginResp = await client.PostAsync(loginUrl, null);
-                if (!loginResp.IsSuccessStatusCode)
-                {
-                    ResultMessage = $"Błąd logowania do Optima. Kod: {loginResp.StatusCode}";
-                    return Page();
-                }
-
-                // Dla każdego zamówienia twórz 308
-                foreach (var order in Orders)
-                {
-                    bool success = await CreateDocForOrder(client, order);
-                    if (success) createdCount++;
-                }
-
-                // Wylogowanie
-                await LogoutOptima(client);
+                ResultMessage = "Brak zamówień do przetworzenia w tym statusie.";
+                return Page();
             }
 
-            ResultMessage = $"Utworzono dokument 308 dla {createdCount} zamówień (status={SelectedStatusId}).";
-        }
-        catch (Exception ex)
-        {
-            ResultMessage = $"Wyjątek podczas przetwarzania zamówień: {ex.Message}";
+            var webApiConfig = await _context.WebApiClient.FirstOrDefaultAsync();
+            if (webApiConfig == null)
+            {
+                ResultMessage = "Brak konfiguracji WebApiClient.";
+                return Page();
+            }
+
+            int updatedCount = 0;
+
+            try
+            {
+                using (var client = _clientFactory.CreateClient())
+                {
+                    // Logowanie do Optima
+                    client.BaseAddress = new Uri(webApiConfig.Localhost);
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", webApiConfig.TokenAPI);
+
+                    var loginUrl = $"/api/LoginOptima?companyName={webApiConfig.CompanyName}";
+                    var loginResp = await client.PostAsync(loginUrl, null);
+                    if (!loginResp.IsSuccessStatusCode)
+                    {
+                        ResultMessage = $"Błąd logowania do Optima. Kod: {loginResp.StatusCode}";
+                        return Page();
+                    }
+
+                    // Pętla po zamówieniach
+                    foreach (var order in Orders)
+                    {
+                        bool success = await CreateDocForOrder(client, order);
+                        if (success)
+                        {
+                            // == Tutaj aktualizujemy status w Sellasist ==
+                            bool updateOk = await UpdateSellasistOrderStatus(order.Id, SelectedNewStatusId);
+                            if (updateOk)
+                            {
+                                updatedCount++;
+                            }
+                        }
+                    }
+
+                    // Wylogowanie z Optima
+                    await LogoutOptima(client);
+                }
+
+                ResultMessage = $"Utworzono dokumenty 308 i zaktualizowano status dla {updatedCount} zamówień." +
+                                $"(Stary status={SelectedStatusId}, nowy={SelectedNewStatusId}).";
+            }
+            catch (Exception ex)
+            {
+                ResultMessage = $"Wyjątek podczas przetwarzania zamówień: {ex.Message}";
+            }
+
+            // W tym handlerze nie wyświetlamy listy zamówień, więc:
+            Orders = null;
+            return Page();
         }
 
-        // Strona nie wyświetla listy
-        Orders = null;
-        return Page();
-    }
 
-    // -------------------------------------
-    // Handler: UTWÓRZ dokument 308 dla jednego zamówienia
-    // -------------------------------------
-    public async Task<IActionResult> OnPostCreateDoc(int orderId)
+        // -------------------------------------
+        // Handler: UTWÓRZ dokument 308 dla jednego zamówienia
+        // -------------------------------------
+        public async Task<IActionResult> OnPostCreateDoc(int orderId)
     {
         // Upewnij się, że mamy zamówienia
         await LoadOrdersByStatusAsync(SelectedStatusId);
@@ -392,6 +468,54 @@ namespace Sellasist_Optima.Pages.Zamówienia
         {
             Console.WriteLine($"Błąd przy pobieraniu zamówień: {ex.Message}");
         }
+       }
+
+    private async Task<bool> UpdateSellasistOrderStatus(string orderId, int newStatusId)
+        {
+            try
+            {
+                // Wczytujesz dane do logowania (np. z tabeli SellAsistAPI)
+                var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync();
+                if (apiInfo == null)
+                {
+                    Console.WriteLine("Brak konfiguracji SellAsistAPI");
+                    return false;
+                }
+
+                using (HttpClient client = _clientFactory.CreateClient())
+                {
+                    client.BaseAddress = new Uri(apiInfo.ShopName);
+                    client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
+
+                    // Endpoint PUT do aktualizacji zamówienia
+                    var updateUrl = $"/api/v1/orders/{orderId}";
+
+                    // Body minimalne (wg dokumentacji Sellasist)
+                    var body = new
+                    {
+                        id = orderId,
+                        status = newStatusId
+                    };
+
+                    var jsonString = JsonConvert.SerializeObject(body);
+                    var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+                    var response = await client.PutAsync(updateUrl, content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"Błąd przy zmianie statusu. Kod: {response.StatusCode}");
+                    }
+
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Wyjątek przy zmianie statusu: {ex.Message}");
+                return false;
+            }
+        }
+
     }
-}
 }

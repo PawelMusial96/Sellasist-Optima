@@ -18,6 +18,10 @@
             <label for="SelectedStatusId">Wybierz status:</label>
             <select asp-for="SelectedStatusId" asp-items="Model.StatusList"></select>
         </div>
+        <div>
+            <label for="SelectedNewStatusId">Wybierz nowy status (docelowy):</label>
+            <select asp-for="SelectedNewStatusId" asp-items="Model.StatusList"></select>
+        </div>
         <button type="submit" style="color: white; background-color: green;">
             Pobierz wszystkie zamówienia i utwórz 308
         </button>

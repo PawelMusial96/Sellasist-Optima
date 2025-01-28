@@ -89,7 +89,6 @@ namespace Sellasist_Optima.Pages.WebAPI
                 {
                     await LoadProductsAsync();
 
-                    // Pobiernie istniej¹ce mapowania towarów
                     var existingMappingsEAN = await _context.ProductMappings.ToListAsync();
 
                     foreach (var sap in SellAsistProducts)
@@ -123,7 +122,6 @@ namespace Sellasist_Optima.Pages.WebAPI
                 {
                     await LoadProductsAsync();
 
-                    // Pobiernie istniej¹ce mapowania towarów
                     var existingMappingsSKU = await _context.ProductMappings.ToListAsync();
 
                     foreach (var sap in SellAsistProducts)

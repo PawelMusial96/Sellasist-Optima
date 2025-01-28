@@ -45,12 +45,10 @@ namespace Sellasist_Optima.Pages.Konfiguracja
         {
             try
             {
-                // Pobieramy istniej¹cy rekord z tabeli WebApiClient - zak³adamy ¿e jest tylko jeden
                 var existingWebApiClient = await _context.WebApiClient.FirstOrDefaultAsync();
 
                 if (existingWebApiClient == null)
                 {
-                    // Je¿eli brak jakiegokolwiek rekordu, tworzymy nowy
                     _context.WebApiClient.Add(WebApiClient);
                     int saved = await _context.SaveChangesAsync();
                     Message = saved > 0
@@ -59,7 +57,6 @@ namespace Sellasist_Optima.Pages.Konfiguracja
                 }
                 else
                 {
-                    // Rekord istnieje, aktualizujemy go nowymi danymi
                     existingWebApiClient.Username = WebApiClient.Username;
                     existingWebApiClient.Password = WebApiClient.Password;
                     existingWebApiClient.Grant_type = WebApiClient.Grant_type;
@@ -106,7 +103,6 @@ namespace Sellasist_Optima.Pages.Konfiguracja
 
             if (existingSellAsistAPI == null)
             {
-                // Brak wpisu w bazie, tworzymy nowy
                 _context.SellAsistAPI.Add(SellAsistAPI);
                 int saved = await _context.SaveChangesAsync();
                 Message = saved > 0
@@ -115,7 +111,6 @@ namespace Sellasist_Optima.Pages.Konfiguracja
             }
             else
             {
-                // Istnieje ju¿ jeden rekord, aktualizujemy go nowymi danymi
                 existingSellAsistAPI.ShopName = SellAsistAPI.ShopName;
                 existingSellAsistAPI.KeyAPI = SellAsistAPI.KeyAPI;
 

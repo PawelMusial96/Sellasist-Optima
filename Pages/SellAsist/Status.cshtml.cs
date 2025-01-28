@@ -13,11 +13,8 @@ namespace Sellasist_Optima.Pages
     public class StatusModel : PageModel
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        //private readonly SellAsistContext _context;
         private readonly ConfigurationContext _context;
         public List<Status> Status { get; set; }
-
-        //public StatusModel(IHttpClientFactory httpClientFactory, SellAsistContext context)
         public StatusModel(IHttpClientFactory httpClientFactory, ConfigurationContext context)
         {
             _httpClientFactory = httpClientFactory;
@@ -26,7 +23,7 @@ namespace Sellasist_Optima.Pages
 
         public async Task OnGetAsync()
         {
-            var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync(); // Pobranie pierwszej konfiguracji API
+            var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync();
             if (apiInfo != null)
             {
                 HttpClient client = _httpClientFactory.CreateClient();

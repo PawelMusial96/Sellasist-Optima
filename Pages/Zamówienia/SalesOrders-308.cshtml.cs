@@ -22,40 +22,28 @@ namespace Sellasist_Optima.Pages.Zamówienia
         _context = context;
     }
 
-    // Lista statusów z Sellasist
     public List<Status> AllStatuses { get; set; } = new List<Status>();
 
-    // Do selecta (dropdown)
     public List<SelectListItem> StatusList { get; set; } = new List<SelectListItem>();
 
-    // ID wybranego statusu (powiązany z dropdown)
     [BindProperty]
     public int SelectedStatusId { get; set; }
 
     [BindProperty]
     public int SelectedNewStatusId { get; set; }
 
-    // Do wyświetlenia nazwy wybranego statusu
     public string SelectedStatusName { get; set; }
 
-    // Lista zamówień pobranych z Sellasist
     public List<Order> Orders { get; set; } = new List<Order>();
 
-    // Komunikat zwrotny dla użytkownika
     public string ResultMessage { get; set; }
 
-    // -------------------------------------
-    // OnGet, pobieramy listę statusów
-    // -------------------------------------
     public async Task OnGetAsync()
     {
         await LoadStatusesAsync();
         BuildStatusSelectList();
     }
 
-    // -------------------------------------
-    // Odczyt zamówień wg statusu (opcjonalny)
-    // -------------------------------------
     public Task<IActionResult> OnPostFetchOrders()
     {
         return OnPostFetchOrdersById(SelectedStatusId);
@@ -63,121 +51,25 @@ namespace Sellasist_Optima.Pages.Zamówienia
 
     public async Task<IActionResult> OnPostFetchOrdersById(int selectedStatusId)
     {
-        // Upewnij się, że mamy statusy
         if (!AllStatuses.Any())
         {
             await LoadStatusesAsync();
         }
         BuildStatusSelectList();
 
-        // Znajdź nazwę wybranego statusu
         var chosenStatus = AllStatuses.FirstOrDefault(s => s.Id == selectedStatusId);
         SelectedStatusName = chosenStatus?.Name ?? "Unknown";
 
-        // Pobierz zamówienia w wybranym statusie
         await LoadOrdersByStatusAsync(SelectedStatusId);
 
         return Page();
     }
-
-        // -------------------------------------
-        // Handler: pobierz i UTWÓRZ dokumenty 308
-        // -------------------------------------
-        /// <summary>
-        /// 1) Pobiera wszystkie zamówienia z wybranego statusu
-        /// 2) Dla każdego zamówienia tworzy dokument 308
-        /// 3) Nie wyświetla danych o zamówieniach
-        /// </summary>
-        //public async Task<IActionResult> OnPostDownloadAndCreateDocs()
-        //{
-        //    // Załaduj statusy i listę do dropdown
-        //    await LoadStatusesAsync();
-        //    BuildStatusSelectList();
-
-        //    // Pobierz zamówienia w danym statusie
-        //    await LoadOrdersByStatusAsync(SelectedStatusId);
-
-        //    // Jeśli brak zamówień -> koniec
-        //    if (Orders == null || !Orders.Any())
-        //    {
-        //        ResultMessage = "Brak zamówień do przetworzenia w tym statusie.";
-        //        return Page();
-        //    }
-
-        //    // === Wczytanie konfiguracji z bazy (z Configuration.cshtml) ===
-        //    var webApiConfig = await _context.WebApiClient.FirstOrDefaultAsync();
-        //    if (webApiConfig == null)
-        //    {
-        //        ResultMessage = "Brak konfiguracji WebApiClient. Uzupełnij w sekcji Konfiguracja.";
-        //        return Page();
-        //    }
-
-        //    // Tutaj pobieramy parametry z WebApiClient:
-        //    //   Localhost, CompanyName, TokenAPI, DatabaseName, itp.
-        //    // Dla przykładu przyjmujemy, że "Localhost" to nasz BaseAddress,
-        //    // "CompanyName" to np. FIRMA_DEMO (zmienna),
-        //    // "TokenAPI" to Bearer token.
-        //    // Oczywiście możesz zmienić w zależności od konwencji w swojej bazie.
-        //    string baseUrl = webApiConfig.Localhost;      // e.g. "http://localhost:6462"
-        //    string token = webApiConfig.TokenAPI;         // e.g. "some-long-bearer-token"
-        //    string companyName = webApiConfig.CompanyName; // e.g. "FIRMA_DEMO"
-
-        //    // (Opcjonalnie dopisz http:// jeśli user wpisał samo "localhost:6462")
-        //    if (!baseUrl.StartsWith("http://") && !baseUrl.StartsWith("https://"))
-        //    {
-        //        baseUrl = "http://" + baseUrl;
-        //    }
-
-        //    int createdCount = 0;
-
-        //    try
-        //    {
-        //        using (var client = _clientFactory.CreateClient())
-        //        {
-        //            // Ustaw BaseAddress + Bearer
-        //            client.BaseAddress = new Uri(baseUrl);
-        //            client.DefaultRequestHeaders.Authorization =
-        //                new AuthenticationHeaderValue("Bearer", token);
-
-        //            // Logowanie do Comarch
-        //            // Zamiast "...?companyName=FIRMA_DEMO", używamy wczytanej wartości "companyName"
-        //            var loginUrl = $"/api/LoginOptima?companyName={companyName}";
-        //            var loginResp = await client.PostAsync(loginUrl, null);
-        //            if (!loginResp.IsSuccessStatusCode)
-        //            {
-        //                ResultMessage = $"Błąd logowania do Optima. Kod: {loginResp.StatusCode}";
-        //                return Page();
-        //            }
-
-        //            // Dla każdego zamówienia twórz 308
-        //            foreach (var order in Orders)
-        //            {
-        //                bool success = await CreateDocForOrder(client, order);
-        //                if (success) createdCount++;
-        //            }
-
-        //            // Wylogowanie
-        //            await LogoutOptima(client);
-        //        }
-
-        //        ResultMessage = $"Utworzono dokument 308 dla {createdCount} zamówień (status={SelectedStatusId}).";
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ResultMessage = $"Wyjątek podczas przetwarzania zamówień: {ex.Message}";
-        //    }
-
-        //    // Strona nie wyświetla listy
-        //    Orders = null;
-        //    return Page();
-        //}
 
         public async Task<IActionResult> OnPostDownloadAndCreateDocs()
         {
             await LoadStatusesAsync();
             BuildStatusSelectList();
 
-            // Pobierz zamówienia w wybranym statusie (SelectedStatusId)
             await LoadOrdersByStatusAsync(SelectedStatusId);
 
             if (Orders == null || !Orders.Any())
@@ -212,13 +104,11 @@ namespace Sellasist_Optima.Pages.Zamówienia
                         return Page();
                     }
 
-                    // Pętla po zamówieniach
                     foreach (var order in Orders)
                     {
                         bool success = await CreateDocForOrder(client, order);
                         if (success)
                         {
-                            // == Tutaj aktualizujemy status w Sellasist ==
                             bool updateOk = await UpdateSellasistOrderStatus(order.Id, SelectedNewStatusId);
                             if (updateOk)
                             {
@@ -226,8 +116,6 @@ namespace Sellasist_Optima.Pages.Zamówienia
                             }
                         }
                     }
-
-                    // Wylogowanie z Optima
                     await LogoutOptima(client);
                 }
 
@@ -238,19 +126,12 @@ namespace Sellasist_Optima.Pages.Zamówienia
             {
                 ResultMessage = $"Wyjątek podczas przetwarzania zamówień: {ex.Message}";
             }
-
-            // W tym handlerze nie wyświetlamy listy zamówień, więc:
             Orders = null;
             return Page();
         }
 
-
-        // -------------------------------------
-        // Handler: UTWÓRZ dokument 308 dla jednego zamówienia
-        // -------------------------------------
         public async Task<IActionResult> OnPostCreateDoc(int orderId)
     {
-        // Upewnij się, że mamy zamówienia
         await LoadOrdersByStatusAsync(SelectedStatusId);
 
         var order = Orders.FirstOrDefault(o => o.Id == orderId.ToString());
@@ -260,7 +141,6 @@ namespace Sellasist_Optima.Pages.Zamówienia
             return await OnPostFetchOrdersById(SelectedStatusId);
         }
 
-        // Znów wczytaj konfigurację z bazy
         var webApiConfig = await _context.WebApiClient.FirstOrDefaultAsync();
         if (webApiConfig == null)
         {
@@ -280,12 +160,10 @@ namespace Sellasist_Optima.Pages.Zamówienia
         {
             using (var client = _clientFactory.CreateClient())
             {
-                // Autoryzacja
                 client.BaseAddress = new Uri(baseUrl);
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
 
-                // Logowanie
                 var loginUrl = $"/api/LoginOptima?companyName={companyName}";
                 var loginResp = await client.PostAsync(loginUrl, null);
                 if (!loginResp.IsSuccessStatusCode)
@@ -294,7 +172,6 @@ namespace Sellasist_Optima.Pages.Zamówienia
                     return await OnPostFetchOrdersById(SelectedStatusId);
                 }
 
-                // Tworzymy dokument 308
                 var success = await CreateDocForOrder(client, order);
                 if (!success)
                 {
@@ -303,10 +180,8 @@ namespace Sellasist_Optima.Pages.Zamówienia
                     return await OnPostFetchOrdersById(SelectedStatusId);
                 }
 
-                // Jeśli OK
                 ResultMessage = $"Dokument 308 poprawnie utworzony dla zamówienia ID={orderId}!";
 
-                // Wylogowanie
                 await LogoutOptima(client);
             }
         }
@@ -318,25 +193,20 @@ namespace Sellasist_Optima.Pages.Zamówienia
         return await OnPostFetchOrdersById(SelectedStatusId);
     }
 
-    // -------------------------------------
-    // Metoda tworząca dokument 308 (private)
-    // -------------------------------------
     private async Task<bool> CreateDocForOrder(HttpClient client, Order order)
     {
         try
         {
-            // Relative path, since we set BaseAddress
             var docUrl = "/api/Documents";
 
-            // Przykładowy mapping JSON
             var docData = new
             {
                 type = 308,                           // Zamówienie sprzedaży
-                foreignNumber = $"ZAM_{order.Id}",
+                foreignNumber = $"ZAM_{order.Id}",    //Wartośc numeru obcego
                 calculatedOn = 1,                     // 1=netto
                 paymentMethod = "przelew",            // przykładowo
-                currency = order.Payment?.Currency ?? "PLN",
-                description = $"Zam. z Sellasist (ID={order.Id})",
+                currency = order.Payment?.Currency ?? "PLN",       // waluta
+                description = $"Zam. z Sellasist (ID={order.Id})", // opis
                 status = 1,                           // do edycji
                 sourceWarehouseId = 1,
                 documentIssueDate = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
@@ -366,7 +236,6 @@ namespace Sellasist_Optima.Pages.Zamówienia
             var createResp = await client.PostAsync(docUrl, jsonContent);
             if (!createResp.IsSuccessStatusCode)
             {
-                // Tu można zalogować błąd w razie potrzeby
                 return false;
             }
 
@@ -378,18 +247,12 @@ namespace Sellasist_Optima.Pages.Zamówienia
         }
     }
 
-    // -------------------------------------
-    // Wylogowanie – relative path
-    // -------------------------------------
     private async Task LogoutOptima(HttpClient client)
     {
         var logoutUrl = "/api/LogoutOptima";
         await client.PostAsync(logoutUrl, null);
     }
 
-    // -------------------------------------
-    // Metody pomocnicze do pobierania z Sellasist
-    // -------------------------------------
     private async Task LoadStatusesAsync()
     {
         try
@@ -474,7 +337,6 @@ namespace Sellasist_Optima.Pages.Zamówienia
         {
             try
             {
-                // Wczytujesz dane do logowania (np. z tabeli SellAsistAPI)
                 var apiInfo = await _context.SellAsistAPI.FirstOrDefaultAsync();
                 if (apiInfo == null)
                 {
@@ -487,10 +349,8 @@ namespace Sellasist_Optima.Pages.Zamówienia
                     client.BaseAddress = new Uri(apiInfo.ShopName);
                     client.DefaultRequestHeaders.Add("apiKey", apiInfo.KeyAPI);
 
-                    // Endpoint PUT do aktualizacji zamówienia
                     var updateUrl = $"/api/v1/orders/{orderId}";
 
-                    // Body minimalne (wg dokumentacji Sellasist)
                     var body = new
                     {
                         id = orderId,

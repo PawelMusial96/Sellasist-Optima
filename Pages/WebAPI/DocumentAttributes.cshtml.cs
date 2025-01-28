@@ -51,7 +51,6 @@ namespace Sellasist_Optima.Pages.WebAPI
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", webapiInfo.TokenAPI);
 
                 HttpResponseMessage response = await client.GetAsync("/api/AttributeDefinitions?type=4");
-                //HttpResponseMessage response = await client.GetAsync("/api/AttributeDefinitions");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();

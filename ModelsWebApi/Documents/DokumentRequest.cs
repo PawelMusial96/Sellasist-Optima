@@ -36,9 +36,9 @@
         public string IntrastatCountryCode { get; set; } // Kod kraju dla Intrastat
         public string IntrastatTransactionCode { get; set; } // Kod transakcji dla Intrastat
         public DateTime? IntrastatExportDate { get; set; } // Data eksportu Intrastat
-        public Customer Payer { get; set; } // Płatnik dokumentu
-        public Customer Recipent { get; set; } // Odbiorca dokumentu
-        public Customer DefaultPayer { get; set; } // Domyślny płatnik dokumentu
+        public CustomerPayer Payer { get; set; } // Płatnik dokumentu
+        public CustomerRecipent Recipent { get; set; } // Odbiorca dokumentu
+        public CustomerPayer DefaultPayer { get; set; } // Domyślny płatnik dokumentu
         public List<Element> Elements { get; set; } // Elementy dokumentu (towary, usługi, etc.)
         public List<Attribute> Attributes { get; set; } // Atrybuty dokumentu
         public List<string> Jpkv7Codes { get; set; } // Kody JPKV7 dla dokumentu
@@ -54,12 +54,36 @@
     }
 
     // Reprezentacja Płatnika, Odbiorcy, Domyślnego Płatnika
-    public class Customer
+    public class CustomerPayer
     {
         public string Code { get; set; } // Kod klienta
         public string Name1 { get; set; } // Pierwsza linia nazwy klienta
         public int Type { get; set; } // Typ podmiotu (1 - klient, 2 - bank, 3 - pracownik, 4 - biuro)
         public string BankAccountNumber { get; set; } // Numer konta bankowego
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
+        public string PostCode { get; set; }
+        public string HouseNumber { get; set; }
+        public string FlatNumber { get; set; }
+        public string VatNumber { get; set; }
+        public string Email { get; set; }
+    }
+
+    public class CustomerRecipent
+    {
+        public string Code { get; set; } // Kod klienta
+        public string Name1 { get; set; } // Pierwsza linia nazwy klienta
+        public int Type { get; set; } // Typ podmiotu (1 - klient, 2 - bank, 3 - pracownik, 4 - biuro)
+        public string BankAccountNumber { get; set; } // Numer konta bankowego
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
+        public string PostCode { get; set; }
+        public string HouseNumber { get; set; }
+        public string FlatNumber { get; set; }
+        public string VatNumber { get; set; }
+        public string Email { get; set; }
     }
 
     // Reprezentacja Elementu w dokumencie (towary, usługi)

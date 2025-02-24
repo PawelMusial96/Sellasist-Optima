@@ -20,10 +20,16 @@
             <label for="SelectedNewStatusId">Wybierz nowy status (docelowy):</label>
             <select asp-for="SelectedNewStatusId" asp-items="Model.StatusList"></select>
         </div>
+        <div>
+            <label for="PayerCodeName">Kod i nazwa płatnika:</label>
+            <input type="text" asp-for="PayerCodeName" />
+        </div>
         <button type="submit" style="color: white; background-color: green;">
             Pobierz wszystkie zamówienia i utwórz 308
         </button>
     </form>
+
+    
 
     @if (!string.IsNullOrEmpty(Model.ResultMessage))
     {

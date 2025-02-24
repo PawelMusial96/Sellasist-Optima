@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sellasist_Optima.Mapping;
 using Sellasist_Optima.Models;
+using Sellasist_Optima.ModelsAplikacji;
 using Sellasist_Optima.SellAsistModels;
 using Sellasist_Optima.WebApiModels;
 
@@ -70,6 +71,15 @@ namespace Sellasist_Optima.BazyDanych
               .Property(a => a.DatabaseName)
               .HasMaxLength(255);
 
+            builder.Entity<KonfiguracjaAplikacji>()
+                  .HasKey(k => k.Id);
+
+            // Możesz ograniczyć długość kolumny:
+            builder.Entity<KonfiguracjaAplikacji>()
+                  .Property(k => k.PayerCodeName)
+                  .HasMaxLength(255)
+                  .IsRequired(false);
+
 
         }
 
@@ -77,6 +87,7 @@ namespace Sellasist_Optima.BazyDanych
         public DbSet<WebApiClient> WebApiClient { get; set; }
         public DbSet<AttributeMappingModels> AttributeMappings { get; set; }
         public DbSet<ProductMapping> ProductMappings { get; set; }
+        public DbSet<KonfiguracjaAplikacji> KonfiguracjaAplikacji { get; set; }
 
     }
 }

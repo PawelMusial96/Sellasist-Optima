@@ -6,7 +6,11 @@ using Newtonsoft.Json;
 using Sellasist_Optima.BazyDanych;
 using Sellasist_Optima.ModelsSellAsist.Documents;
 using Sellasist_Optima.SellAsistModels;
+using Sellasist_Optima.ModelsAplikacji;
+using System.Diagnostics.Metrics;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.Loader;
 using System.Text;
 
 namespace Sellasist_Optima.Pages.Zamówienia
@@ -27,6 +31,9 @@ namespace Sellasist_Optima.Pages.Zamówienia
     public List<SelectListItem> StatusList { get; set; } = new List<SelectListItem>();
 
     [BindProperty]
+    public string PayerCodeName { get; set; }
+
+    [BindProperty]
     public int SelectedStatusId { get; set; }
 
     [BindProperty]
@@ -34,12 +41,21 @@ namespace Sellasist_Optima.Pages.Zamówienia
 
     public string SelectedStatusName { get; set; }
 
+
     public List<Order> Orders { get; set; } = new List<Order>();
+    public List<AddressBill> AddressList { get; set; } = new List<AddressBill>();
+    public List<Country> CountryList { get; set; } = new List<Country>();
 
     public string ResultMessage { get; set; }
 
     public async Task OnGetAsync()
     {
+        var konfiguracja = await _context.KonfiguracjaAplikacji.FirstOrDefaultAsync();
+        if (konfiguracja != null)
+            {
+                PayerCodeName = konfiguracja.PayerCodeName;
+            }
+
         await LoadStatusesAsync();
         BuildStatusSelectList();
     }
@@ -67,6 +83,20 @@ namespace Sellasist_Optima.Pages.Zamówienia
 
         public async Task<IActionResult> OnPostDownloadAndCreateDocs()
         {
+            var konfiguracja = await _context.KonfiguracjaAplikacji.FirstOrDefaultAsync();
+            if (konfiguracja == null)
+            {
+                konfiguracja = new KonfiguracjaAplikacji();
+                _context.KonfiguracjaAplikacji.Add(konfiguracja);
+            }
+
+            if (!string.IsNullOrWhiteSpace(PayerCodeName))
+            {
+                konfiguracja.PayerCodeName = PayerCodeName;
+            }
+
+            await _context.SaveChangesAsync();
+
             await LoadStatusesAsync();
             BuildStatusSelectList();
 
@@ -106,7 +136,7 @@ namespace Sellasist_Optima.Pages.Zamówienia
 
                     foreach (var order in Orders)
                     {
-                        bool success = await CreateDocForOrder(client, order);
+                        bool success = await CreateDocForOrder(client, order);    
                         if (success)
                         {
                             bool updateOk = await UpdateSellasistOrderStatus(order.Id, SelectedNewStatusId);
@@ -170,10 +200,9 @@ namespace Sellasist_Optima.Pages.Zamówienia
                 {
                     ResultMessage = $"Błąd logowania do Optima. Kod: {loginResp.StatusCode}";
                     return await OnPostFetchOrdersById(SelectedStatusId);
-                }
-
-                var success = await CreateDocForOrder(client, order);
-                if (!success)
+                    }
+                    var success = await CreateDocForOrder(client, order);
+                    if (!success)
                 {
                     ResultMessage = $"Błąd podczas tworzenia dokumentu 308 (ID={orderId}).";
                     await LogoutOptima(client);
@@ -197,9 +226,46 @@ namespace Sellasist_Optima.Pages.Zamówienia
     {
         try
         {
-            var docUrl = "/api/Documents";
+                var konfiguracja = await _context.KonfiguracjaAplikacji.FirstOrDefaultAsync();
+                var payerCodeOrName1 = string.IsNullOrEmpty(konfiguracja?.PayerCodeName) ? string.Empty : konfiguracja.PayerCodeName;
 
-            var docData = new
+                var docUrl = "/api/Documents";
+                //Adres Nabywacy
+                var address = order.BillAddress;
+                var countryInfo = address?.Country;
+ 
+                bool isCompany = !string.IsNullOrWhiteSpace(address?.CompanyName);
+
+                string payerName = isCompany ? address.CompanyName.Trim() : $"{address?.Name} {address?.Surname}".Trim();
+
+                string payerVatNumber = address?.CompanyNip ?? "";
+
+                string countryName = countryInfo?.Name ?? "Polska"; // lub countryInfo?.Code
+                string? city = address?.City;
+                string? street = address?.Street;
+                string? postCode = address?.Postcode;
+                string? houseNumber = address?.HomeNumber;
+                string? flatNumber = address?.FlatNumber;
+
+                ////Adres Odbiorcy
+                //var addresShipment = order.ShipmentAddress;
+                //var countryInfoShipment = addresShipment?.Country;
+
+                //bool isCompanyShipment = !string.IsNullOrWhiteSpace(addresShipment?.CompanyName);
+
+                //string payerNameShipment = isCompany ? addresShipment.CompanyName.Trim() : $"{address?.Name} {address?.Surname}".Trim();
+
+                //string payerVatNumberShipment = addresShipment?.CompanyNip ?? "";
+
+                //string countryNameShipment = countryInfo?.Name ?? "Polska"; // lub countryInfo?.Code
+                //string? cityShipment = addresShipment?.City;
+                //string? streetShipment = addresShipment?.Street;
+                //string? postCodeShipment = addresShipment?.Postcode;
+                //string? houseNumberShipment = addresShipment?.HomeNumber;
+                //string? flatNumberShipment = addresShipment?.FlatNumber;
+
+
+                var docData = new
             {
                 type = 308,                           // Zamówienie sprzedaży
                 foreignNumber = $"ZAM_{order.Id}",    //Wartośc numeru obcego
@@ -213,8 +279,32 @@ namespace Sellasist_Optima.Pages.Zamówienia
 
                 payer = new
                 {
-                    code = "!NIEOKREŚLONY!",
-                    name1 = "!NIEOKREŚLONY!"
+                    code = payerCodeOrName1,
+                    name1 = payerCodeOrName1,
+                    //type = 1,    // 1 – standardowy kontrahent
+                    vatNumber = payerVatNumber,
+                    country = countryName,
+                    city,
+                    street,
+                    postCode,
+                    houseNumber,
+                    flatNumber,
+                    email = order.Email
+                },
+
+                recipient = new
+                {
+                    code = payerCodeOrName1,
+                    name1 = payerCodeOrName1,
+                    //type = 1,    // 1 – standardowy kontrahent
+                    vatNumber = payerVatNumber,
+                    country = countryName,
+                    city,
+                    street,
+                    postCode,
+                    houseNumber,
+                    flatNumber,
+                    email = order.Email
                 },
 
                 elements = order.Carts?.Select(cartItem => new

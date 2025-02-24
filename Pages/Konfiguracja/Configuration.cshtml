@@ -1,111 +1,181 @@
-﻿
-@page
+﻿@page
 @model Sellasist_Optima.Pages.Konfiguracja.ConfigurationModel
+@* @{
+    Layout = null; // jeśli jest używany layout, usuń lub dostosuj
+} *@
 
-<h2>Konfiguracja</h2>
-<h3>Proszę o uzupełnienie poniższych pól</h3>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <title>Konfiguracja</title>
+    <!-- Przykładowy link do Bootstrapa (jeśli używasz CDN lub masz zainstalowany Bootstrap w projekcie) -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          integrity="sha384-ENjdO4Dr2bkBIFxQpeHnCveJS9ZXpN6Dc4lKnz+TGF3hP8vQgZjsSltrDmBY6hZr"
+          crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/js/site.js"></script>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Dodanie py-4 dla górnego i dolnego odstępu -->
+
+        <h2 class="mb-3">Konfiguracja</h2>
+        <p class="text-secondary">Proszę o uzupełnienie poniższych pól</p>
+
+        <!-- Sellasist API -->
+        <form method="post" class="form-section p-3 mb-4 bg-white shadow-sm rounded">
+            <h4 class="mb-3">Sellasist API</h4>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="ShopName" class="form-label">Name Shop:</label>
+                    <input type="text" asp-for="SellAsistAPI.ShopName" class="form-control" id="ShopName" required />
+                    <small class="text-muted">Np: https://mojsklep.sellasist.pl</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="ApiKey" class="form-label">API Key:</label>
+                    <input type="password" asp-for="SellAsistAPI.KeyAPI" class="form-control" id="ApiKey" required />
+                </div>
+            </div>
+
+            <input type="submit" value="Connect API" asp-page-handler="ConnectAPI" class="btn btn-primary" />
+        </form>
 
 
-<form method="post">
-    <h4>Sellasist API</h4>
-    <div>
-        <label>Name Shop:</label>
-        <input type="text" asp-for="SellAsistAPI.ShopName" required />
-        <br />
-        <small>(Np: https://wszystkoinic.sellasist.pl)</small>
-        <br />
-    </div>
-    <div>
-        <label>API Key:</label>
-        <input type="password" asp-for="SellAsistAPI.KeyAPI" required />
-    </div>
-    <input type="submit" value="Connect API" asp-page-handler="ConnectAPI" />
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert alert-info mt-3">
+                @Model.Message
+            </div>
+        }
 
-</form>
+        <h5>Zapisane API SellAsist:</h5>
+        <table class="table table-bordered table-striped table-hover mt-2">
+            <thead class="table-light">
+                <tr>
+                    <th>Name Shop</th>
+                    <th>API Key</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AllSellAsistAPI)
+                {
+                    <tr>
+                        <td>@item.ShopName</td>
+                        <td>@item.KeyAPI</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-@if (!string.IsNullOrEmpty(Model.Message))
-{
-    <div class="alert alert-info mt-3">
-        @Model.Message
-    </div>
-}
+        <!-- WebAPI Optima -->
+        <form method="post" class="form-section p-3 mb-4 bg-white shadow-sm rounded">
+            <h4 class="mb-3">WebAPI Optima</h4>
 
-<h4>Zapisane API SellAsist:</h4>
-<table>
-    <tr>
-        <th>Name Shop</th>
-        <th>API Key</th>
-    </tr>
-    @foreach (var item in Model.AllSellAsistAPI)
-    {
-        <tr>
-            <td>@item.ShopName</td>
-            <td>@item.KeyAPI</td>
-        </tr>
-    }
-</table>
+            <!-- Wiersz: Username, Password -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Username" class="form-label">Username:</label>
+                    <input type="text" asp-for="WebApiClient.Username" class="form-control" id="Username" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="Password" class="form-label">Password:</label>
+                    <input type="password" asp-for="WebApiClient.Password" class="form-control" id="Password" required />
+                </div>
+            </div>
+
+            <!-- Wiersz: Grant Type, Localhost -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="GrantType" class="form-label">Grant Type:</label>
+                    <input type="text" asp-for="WebApiClient.Grant_type" class="form-control" id="GrantType" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="Localhost" class="form-label">Localhost:</label>
+                    <input type="text" asp-for="WebApiClient.Localhost" class="form-control" id="Localhost" required />
+                </div>
+            </div>
+
+            <!-- Wiersz: TokenAPI (pojedyncze pole) -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="TokenAPI" class="form-label">TokenAPI:</label>
+                    <input type="password" asp-for="WebApiClient.TokenAPI" class="form-control" id="TokenAPI" required />
+                </div>
+            </div>
+
+            <!-- Wiersz: CompanyName, DatabaseName -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="CompanyName" class="form-label">Company Name (Optima):</label>
+                    <input type="text" asp-for="WebApiClient.CompanyName" class="form-control" id="CompanyName" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="DatabaseName" class="form-label">Database Name (Optima):</label>
+                    <input type="text" asp-for="WebApiClient.DatabaseName" class="form-control" id="DatabaseName" />
+                </div>
+            </div>
+
+            <input type="submit" value="Connect WebApi" asp-page-handler="ConnectWebAPI" class="btn btn-primary" />
+        </form>
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert alert-info mt-3">
+                @Model.Message
+            </div>
+        }
+
+        <h5>Saved WebAPI Optima:</h5>
+
+        @foreach (var item in Model.AllWebApiClient)
+        {
+            <table class="table table-bordered table-striped table-hover mt-2">
+                <tbody>
+                    <!-- Username = Password -->
+                    <tr>
+                        <th>Username</th>
+                        <td>@item.Username</td>
+                        <th>Password</th>
+                        <td>@item.Password</td>
+                    </tr>
+
+                    <!-- Grant Type = Localhost -->
+                    <tr>
+                        <th>Grant Type</th>
+                        <td>@item.Grant_type</td>
+                        <th>Localhost</th>
+                        <td>@item.Localhost</td>
+                    </tr>
+
+                    <!-- TokenAPI (pojedyncze pole na cały wiersz) -->
+                    <tr>
+                        <th>TokenAPI</th>
+                        <!-- Używamy colspan="3", aby TokenAPI rozciągnęło się na pozostałe trzy kolumny -->
+                        <td colspan="3">@item.TokenAPI</td>
+                    </tr>
+
+                    <!-- CompanyName = DatabaseName -->
+                    <tr>
+                        <th>CompanyName</th>
+                        <td>@item.CompanyName</td>
+                        <th>DatabaseName</th>
+                        <td>@item.DatabaseName</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
 
 
-<form method="post">
-    <h4>WebAPI Optima</h4>
-    <div>
-        <label>Username:</label>
-        <input type="text" asp-for="WebApiClient.Username" required />
-    </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" asp-for="WebApiClient.Password" required />
-    </div>
-    <div>
-        <label>Grant Type:</label>
-        <input type="text" asp-for="WebApiClient.Grant_type" required />
-    </div>
-    <div>
-        <label>Localhost:</label>
-        <input type="text" asp-for="WebApiClient.Localhost" required />
-    </div>
-    <div>
-        <label>TokenAPI:</label>
-        <input type="password" asp-for="WebApiClient.TokenAPI" required />
-    </div>
-    <div>
-        <label>Company Name (Optima):</label>
-        <input type="text" asp-for="WebApiClient.CompanyName" />
-    </div>
-    <div>
-        <label>Database Name (Optima):</label>
-        <input type="text" asp-for="WebApiClient.DatabaseName" />
     </div>
 
-    <input type="submit" value="Connect WebApi" asp-page-handler="ConnectWebAPI" />
-</form>
-
-@if (!string.IsNullOrEmpty(Model.Message))
-{
-    <div class="alert alert-info mt-3">
-        @Model.Message
-    </div>
-}
-
-<h4>Saved WebAPI Optima:</h4>
-<table>
-    <tr>
-        <th>Username</th>
-        <th>Password</th>
-        <th>Grant Type</th>
-        <th>Localhost</th>
-        <th>TokenAPI</th>
-    </tr>
-    @foreach (var item in Model.AllWebApiClient)
-    {
-        <tr>
-            <td>@item.Username</td>
-            <td>@item.Password</td>
-            <td>@item.Grant_type</td>
-            <td>@item.Localhost</td>
-            <td>@item.TokenAPI</td>
-            <td>@item.CompanyName</td>
-            <td>@item.DatabaseName</td>
-        </tr>
-    }   
-</table>
+    <!-- Jeśli używasz Bootstrapa z CDN, dodaj też skrypt JS Bootstrapa poniżej.
+         W przeciwnym razie możesz pominąć lub dostosować do własnej konfiguracji. -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ppK/JNaB9RfSc8q+M5N8VJ5Rf80l7shqUpKjGON2u6T9c2s6CEZmeCH9elwtB7gZ"
+            crossorigin="anonymous"></script>
+</body>
+</html>
